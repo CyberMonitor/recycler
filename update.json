@@ -1,0 +1,48 @@
+{
+	"homepage": "https://minecraft.curseforge.com/projects/corail-recycler",
+	"1.13.2": {
+		"3.3.1": "add back the recycling book & fix the button discovery when no disk",
+		"3.3.0": "first port to 1.13.2 (only the recycling book is disabled)"
+	},
+	"1.12.2": {
+		"3.2.4": "compatibility with Charm mod (enchanted books were merged while recycling)",
+		"3.2.3": "fix #18 + config to disable automation",
+		"3.2.2": "energy storage to speed up the recycler in mode auto"
+	},
+	"1.12.1": {
+		"3.0.0": "new gui with lots of new features"
+	},
+	"1.11.2": {
+		"1.4.7": "allow to separate enchantments from an enchanted book (with an option to disable it), improve russian translation"
+	},
+	"1.10.2": {
+		"1.4.7": "allow to separate enchantments from an enchanted book (with an option to disable it), improve russian translation"
+	},
+	"1.9.4": {
+		"1.4.7": "allow to separate enchantments from an enchanted book (with an option to disable it), improve russian translation"
+	},
+	"1.9.0": {
+		"1.4.7": "allow to separate enchantments from an enchanted book (with an option to disable it), improve russian translation"
+	},
+	"1.8.9": {
+		"1.4.7": "allow to separate enchantments from an enchanted book (with an option to disable it), improve russian translation"
+	},
+	"promos": {
+		"1.13.2-latest": "3.3.1",
+		"1.13.2-recommended": "3.3.1",
+		"1.12.2-latest": "3.2.4",
+		"1.12.2-recommended": "3.2.4",
+		"1.12.1-latest": "3.0.0",
+		"1.12.1-recommended": "3.0.0",
+		"1.11.2-latest": "1.4.7",
+		"1.11.2-recommended": "1.4.7",
+		"1.10.2-latest": "1.4.7",
+		"1.10.2-recommended": "1.4.7",
+		"1.9.4-latest": "1.4.7",
+		"1.9.4-recommended": "1.4.7",
+		"1.9.0-latest": "1.4.7",
+		"1.9.0-recommended": "1.4.7",
+		"1.8.9-latest": "1.4.7",
+		"1.8.9-recommended": "1.4.7"
+	}
+}
