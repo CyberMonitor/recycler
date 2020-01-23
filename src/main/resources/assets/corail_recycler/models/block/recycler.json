@@ -1,0 +1,8 @@
+{
+	"parent": "block/cube_bottom_top",
+	"textures": {
+		"top": "corail_recycler:block/recycler_top_off",
+		"bottom": "corail_recycler:block/recycler_down",
+		"side": "corail_recycler:block/recycler_side_off"
+	}
+}

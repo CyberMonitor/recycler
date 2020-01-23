@@ -1,0 +1,6 @@
+{
+"type":"crafting_shaped",
+"pattern":[" 0 ","010"," 0 "],
+"key":{"0":{"item": "corail_recycler:diamond_shard"},"1":{"item": "minecraft:iron_ingot"}},
+"result":{"item":"corail_recycler:diamond_disk"}
+}

@@ -1,0 +1,24 @@
+{
+    "display": {
+        "icon": {
+            "item": "corail_recycler:diamond_disk"
+        },
+        "title": {
+            "translate": "advancement.build_disk.title"
+        },
+        "description": {
+            "translate": "advancement.build_disk.desc"
+        },
+		"frame": "task",
+		"hidden": false
+    },
+	"parent": "corail_recycler:tutorial/build_recycler",
+    "criteria": {
+      "coded_trigger": {
+        "trigger": "minecraft:impossible"
+      }
+	},
+	"requirements": [
+      [  "coded_trigger" ]
+    ]
+}

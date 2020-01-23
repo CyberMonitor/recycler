@@ -1,0 +1,24 @@
+{
+    "display": {
+        "icon": {
+            "item": "corail_recycler:recycler"
+        },
+        "title": {
+            "translate": "advancement.build_recycler.title"
+        },
+        "description": {
+            "translate": "advancement.build_recycler.desc"
+        },
+		"frame": "challenge",
+		"hidden": false
+    },
+	"parent": "corail_recycler:tutorial/root",
+    "criteria": {
+      "coded_trigger": {
+        "trigger": "minecraft:impossible"
+      }
+	},
+	"requirements": [
+      [  "coded_trigger" ]
+    ]
+}

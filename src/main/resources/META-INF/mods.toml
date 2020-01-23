@@ -1,0 +1,27 @@
+modLoader="javafml" #mandatory
+loaderVersion="[28,)" #mandatory
+issueTrackerURL="https://github.com/Corail31/recycler/issues/" #optional
+[[mods]] #mandatory
+modId="corail_recycler" #mandatory
+version="${file.jarVersion}" #mandatory
+displayName="Corail Recycler" #mandatory
+updateJSONURL="https://raw.githubusercontent.com/Corail31/recycler/master/update.json" #optional
+displayURL="https://minecraft.curseforge.com/projects/corail-recycler/" #optional
+logoFile="logo.png" #optional
+credits="Special thanks to the Forge and FML guys." #optional
+authors="Corail31" #optional
+description='''
+Recycler is an uncrafting table that allows to recycle most of your items (also damaged and enchanted items) and can work with automation.
+'''
+[[dependencies.corail_recycler]]
+    modId="forge"
+    mandatory=true
+    versionRange="[28.1.10,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.corail_recycler]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.14.4,1.15)"
+    ordering="NONE"
+    side="BOTH"

@@ -1,0 +1,27 @@
+{
+	"parent": "corail_recycler:recipes/root",
+	"rewards": {
+		"recipes": ["corail_recycler:diamond_shard", "corail_recycler:diamond"]
+	},
+	"criteria": {
+		"requirement_1": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [{
+					"item": "minecraft:diamond"
+				}]
+			}
+		},
+		"requirement_2": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [{
+					"item": "corail_recycler:diamond_shard"
+				}]
+			}
+		}
+	},
+	"requirements": [
+		["requirement_1", "requirement_2"]
+	]
+}

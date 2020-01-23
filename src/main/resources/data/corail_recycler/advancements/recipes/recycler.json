@@ -1,0 +1,35 @@
+{
+	"parent": "corail_recycler:recipes/root",
+	"rewards": {
+		"recipes": ["corail_recycler:recycler"]
+	},
+	"criteria": {
+		"requirement_1": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [{
+					"tag": "minecraft:planks"
+				}]
+			}
+		},
+		"requirement_2": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [{
+					"item": "minecraft:iron_ingot"
+				}]
+			}
+		},
+		"requirement_3": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [{
+					"item": "minecraft:chest"
+				}]
+			}
+		}
+	},
+	"requirements": [
+		["requirement_1", "requirement_2", "requirement_3"]
+	]
+}

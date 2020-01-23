@@ -1,0 +1,22 @@
+{
+    "recycler": {
+        "category": "blocks",
+        "sounds": [
+            {
+                "name": "corail_recycler:recycler",
+				"volume": 0.5,
+                "stream": true
+            }
+        ]
+    },
+	"recycler_working": {
+        "category": "blocks",
+        "sounds": [
+            {
+                "name": "corail_recycler:recycler_working",
+				"volume": 0.5,
+                "stream": true
+            }
+        ]
+    }
+}

@@ -1,0 +1,5 @@
+{
+"type":"crafting_shapeless",
+"ingredients":[{"item": "minecraft:diamond"}],
+"result":{"item": "corail_recycler:diamond_shard","count": 9}
+}

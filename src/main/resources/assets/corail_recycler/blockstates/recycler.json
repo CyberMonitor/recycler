@@ -1,0 +1,12 @@
+{
+    "variants": {
+        "facing=north,enabled=false": { "model": "corail_recycler:block/recycler" },
+        "facing=south,enabled=false":  { "model": "corail_recycler:block/recycler","y": 180 },
+		"facing=west,enabled=false": { "model": "corail_recycler:block/recycler","y": 270 },
+        "facing=east,enabled=false":  { "model": "corail_recycler:block/recycler","y": 90 },
+		"facing=north,enabled=true": { "model": "corail_recycler:block/recycler_enabled" },
+        "facing=south,enabled=true":  { "model": "corail_recycler:block/recycler_enabled","y": 180 },
+		"facing=west,enabled=true": { "model": "corail_recycler:block/recycler_enabled","y": 270 },
+        "facing=east,enabled=true":  { "model": "corail_recycler:block/recycler_enabled","y": 90 }
+    }
+}
