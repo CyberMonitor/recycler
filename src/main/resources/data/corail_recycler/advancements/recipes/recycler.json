@@ -16,7 +16,7 @@
 			"trigger": "minecraft:inventory_changed",
 			"conditions": {
 				"items": [{
-					"item": "minecraft:iron_ingot"
+					"tag": "forge:ingots/iron"
 				}]
 			}
 		},
@@ -24,7 +24,7 @@
 			"trigger": "minecraft:inventory_changed",
 			"conditions": {
 				"items": [{
-					"item": "minecraft:chest"
+					"tag": "forge:chests"
 				}]
 			}
 		}

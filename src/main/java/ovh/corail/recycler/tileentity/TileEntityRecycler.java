@@ -12,6 +12,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.INameable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -32,11 +33,9 @@ import ovh.corail.recycler.registry.ModTileEntityTypes;
 import ovh.corail.recycler.util.Helper;
 import ovh.corail.recycler.util.RecyclingManager;
 import ovh.corail.recycler.util.RecyclingRecipe;
-import ovh.corail.recycler.util.TranslationHelper;
-import ovh.corail.recycler.util.TranslationHelper.LangKey;
+import ovh.corail.recycler.util.LangKey;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -82,7 +81,7 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
         ItemHandlerHelper.insertItemStacked(inventOutput, inventWorking.extractItem(0, inventWorking.getStackInSlot(0).getCount(), false), false);
     }
 
-    private boolean hasSpaceInInventory(List<ItemStack> itemsList, boolean simulate) {
+    private boolean hasSpaceInInventory(NonNullList<ItemStack> itemsList, boolean simulate) {
         // TODO clean this method
         // list of empty slots
         List<Integer> emptySlots = IntStream.range(0, this.inventOutput.getSlots()).filter(slot -> this.inventOutput.getStackInSlot(slot).isEmpty()).boxed().collect(Collectors.toList());
@@ -204,10 +203,10 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
             nb_input = maxDiskUse;
         }
         // calculation of the result
-        List<ItemStack> itemsList = recyclingManager.getResultStack(workingStack, nb_input);
+        NonNullList<ItemStack> itemsList = recyclingManager.getResultStack(workingStack, nb_input);
         // simule the space needed
         if (!hasSpaceInInventory(itemsList, true)) {
-            TranslationHelper.sendMessage(player, LangKey.MESSAGE_NOT_ENOUGH_OUTPUT_SLOTS);
+            LangKey.MESSAGE_NOT_ENOUGH_OUTPUT_SLOTS.sendMessage(player);
             return false;
         }
         // Loss chance
@@ -220,17 +219,17 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
                 }
             }
             if (loss > 0) {
-                TranslationHelper.sendMessage(player, LangKey.MESSAGE_LOSS);
+                LangKey.MESSAGE_LOSS.sendMessage(player);
             }
         }
-        List<ItemStack> stackList;
+        NonNullList<ItemStack> stackList;
         if (nb_input - loss > 0) {
             stackList = recyclingManager.getResultStack(workingStack, nb_input - loss);
         } else {
-            stackList = new ArrayList<>();
+            stackList = NonNullList.create();
         }
         if (loss > 0) {
-            List<ItemStack> halfstackList = recyclingManager.getResultStack(workingStack, loss, true);
+            NonNullList<ItemStack> halfstackList = recyclingManager.getResultStack(workingStack, loss, true);
             stackList.addAll(halfstackList);
         }
         // transfer stacks
@@ -240,7 +239,7 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
         // damage the disk
         int diskDamage = 10 * nb_input;
         if (diskStack.getDamage() + diskDamage >= diskStack.getMaxDamage()) {
-            TranslationHelper.sendMessage(player, LangKey.MESSAGE_BROKEN_DISK);
+            LangKey.MESSAGE_BROKEN_DISK.sendMessage(player);
             this.inventWorking.setStackInSlot(1, ItemStack.EMPTY);
         } else {
             this.inventWorking.getStackInSlot(1).setDamage(diskStack.getDamage() + diskDamage);
@@ -335,7 +334,7 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
     public void updateRecyclingRecipe() {
         RecyclingRecipe recipe = RecyclingManager.instance.getRecipe(getInventoryWorking().getStackInSlot(0));
         boolean hasRecipe = recipe != null;
-        List<ItemStack> currentRecipe = hasRecipe ? RecyclingManager.instance.getResultStack(getInventoryWorking().getStackInSlot(0), 1) : new ArrayList<>();
+        NonNullList<ItemStack> currentRecipe = hasRecipe ? RecyclingManager.instance.getResultStack(getInventoryWorking().getStackInSlot(0), 1) : NonNullList.create();
         // autofill the visual slots if needed
         int slotId = 0;
         if (hasRecipe) {
@@ -464,12 +463,12 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
 
     @Override
     public CompoundNBT getUpdateTag() {
-        return write(new CompoundNBT());
+        return Helper.removeTagFromNBT(write(new CompoundNBT()), "invent_output", "invent_input", "invent_working");
     }
 
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(pos, 1, serializeNBT());
+        return new SUpdateTileEntityPacket(pos, 1, getUpdateTag());
     }
 
     @Override

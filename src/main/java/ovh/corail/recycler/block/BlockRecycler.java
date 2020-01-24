@@ -108,7 +108,6 @@ public class BlockRecycler extends Block {
                 IntStream.range(0, recycler.getInventoryOutput().getSlots()).forEach(slot -> InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), recycler.getInventoryOutput().getStackInSlot(slot)));
                 world.removeTileEntity(pos);
             }
-            super.onReplaced(oldState, world, pos, newState, isMoving);
         }
     }
 

@@ -17,6 +17,7 @@ import ovh.corail.recycler.gui.GuiRecycler;
 import ovh.corail.recycler.gui.GuiRecyclingBook;
 import ovh.corail.recycler.network.PacketHandler;
 import ovh.corail.recycler.registry.ModContainers;
+import ovh.corail.recycler.registry.ModTabs;
 import ovh.corail.recycler.registry.ModTriggers;
 import ovh.corail.recycler.util.RecyclingManager;
 
@@ -28,7 +29,7 @@ public class ModRecycler {
 
     @SuppressWarnings("UnstableApiUsage")
     public ModRecycler() {
-        Reflection.initialize(PacketHandler.class, ModTriggers.class);
+        Reflection.initialize(PacketHandler.class, ModTriggers.class, ModTabs.class);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigRecycler.GENERAL_SPEC);
         MinecraftForge.EVENT_BUS.register(this);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientInit);

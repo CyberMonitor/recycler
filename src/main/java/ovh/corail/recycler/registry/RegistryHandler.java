@@ -8,7 +8,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -16,7 +15,7 @@ import ovh.corail.recycler.block.BlockRecycler;
 import ovh.corail.recycler.block.ItemBlockRecycler;
 import ovh.corail.recycler.gui.ContainerRecycler;
 import ovh.corail.recycler.gui.ContainerRecyclingBook;
-import ovh.corail.recycler.item.ItemDiamondDisk;
+import ovh.corail.recycler.item.ItemDisk;
 import ovh.corail.recycler.item.ItemGeneric;
 import ovh.corail.recycler.tileentity.TileEntityRecycler;
 
@@ -26,21 +25,21 @@ import static ovh.corail.recycler.ModRecycler.MOD_ID;
 @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RegistryHandler {
 
-    @SubscribeEvent(priority = EventPriority.NORMAL)
+    @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         event.getRegistry().register(withName(new BlockRecycler(), "recycler"));
     }
 
-    @SubscribeEvent(priority = EventPriority.NORMAL)
+    @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
         event.getRegistry().registerAll(
                 withName(new ItemGeneric("diamond_shard"), "diamond_shard"),
-                withName(new ItemDiamondDisk(), "diamond_disk"),
+                withName(new ItemDisk("diamond_disk", 5000), "diamond_disk"),
                 withName(new ItemBlockRecycler(ModBlocks.recycler), ModBlocks.recycler.getRegistryName())
         );
     }
 
-    @SubscribeEvent(priority = EventPriority.NORMAL)
+    @SubscribeEvent
     public static void registerSounds(RegistryEvent.Register<SoundEvent> event) {
         event.getRegistry().registerAll(
                 fromSound("recycler"),
@@ -48,7 +47,7 @@ public class RegistryHandler {
         );
     }
 
-    @SubscribeEvent(priority = EventPriority.NORMAL)
+    @SubscribeEvent
     public static void registerTileEntities(RegistryEvent.Register<TileEntityType<?>> event) {
         event.getRegistry().register(withName(TileEntityType.Builder.create(TileEntityRecycler::new, ModBlocks.recycler).build(null), "recycler"));
     }

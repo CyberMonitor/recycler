@@ -27,7 +27,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import ovh.corail.recycler.ConfigRecycler;
 import ovh.corail.recycler.registry.ModBlocks;
 import ovh.corail.recycler.registry.ModItems;
-import ovh.corail.recycler.util.TranslationHelper.LangKey;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
@@ -36,11 +35,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -53,10 +51,10 @@ import static ovh.corail.recycler.ModRecycler.MOD_ID;
 public class RecyclingManager {
     public static final RecyclingManager instance = new RecyclingManager();
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
-    private final List<RecyclingRecipe> recipes = new ArrayList<>();
+    private final NonNullList<RecyclingRecipe> recipes = NonNullList.create();
     private final Set<ItemStack> unbalanced = new HashSet<>();
     private final Set<ItemStack> blacklist = new HashSet<>();
-    private final List<ImmutablePair<ItemStack, ItemStack>> grindList = new ArrayList<>();
+    private final NonNullList<ImmutablePair<ItemStack, ItemStack>> grindList = NonNullList.create();
     public final File CONFIG_DIR = new File(FMLPaths.CONFIGDIR.get().toFile(), MOD_ID);
     private final File unbalancedFile = new File(CONFIG_DIR, "unbalanced_recipes.json");
     private final File blacklistFile = new File(CONFIG_DIR, "blacklist_recipes.json");
@@ -75,11 +73,11 @@ public class RecyclingManager {
         if (hasRecipe >= 0) {
             // isn't blacklist
             if (getRecipe(hasRecipe).isAllowed()) {
-                TranslationHelper.sendMessage(player, LangKey.MESSAGE_ADD_RECIPE_FAILED);
+                LangKey.MESSAGE_ADD_RECIPE_FAILED.sendMessage(player);
             } else {
                 getRecipe(hasRecipe).setAllowed(true);
                 saveBlacklist();
-                TranslationHelper.sendMessage(player, LangKey.MESSAGE_ADD_RECIPE_SUCCESS);
+                LangKey.MESSAGE_ADD_RECIPE_SUCCESS.sendMessage(player);
             }
         } else {
             // new recipe added
@@ -98,9 +96,9 @@ public class RecyclingManager {
             // add recipe and save user defined recipes to json
             if (valid) {
                 addRecipe(recipe);
-                TranslationHelper.sendMessage(player, saveUserDefinedRecipes() ? LangKey.MESSAGE_ADD_RECIPE_SUCCESS : LangKey.MESSAGE_ADD_RECIPE_FAILED);
+                (saveUserDefinedRecipes() ? LangKey.MESSAGE_ADD_RECIPE_SUCCESS : LangKey.MESSAGE_ADD_RECIPE_FAILED).sendMessage(player);
             } else {
-                TranslationHelper.sendMessage(player, LangKey.MESSAGE_ADD_RECIPE_FAILED);
+                LangKey.MESSAGE_ADD_RECIPE_FAILED.sendMessage(player);
             }
         }
     }
@@ -149,7 +147,8 @@ public class RecyclingManager {
             addToCollection(this.unbalanced, Blocks.RED_NETHER_BRICKS);
             addToCollection(this.unbalanced, Blocks.MAGMA_BLOCK);
             addToCollection(this.unbalanced, Blocks.GRANITE);
-            saveAsJson(this.unbalancedFile, this.unbalanced.stream().map(this::itemStackToString).collect(Collectors.toList()));
+            NonNullList<String> res = this.unbalanced.stream().map(this::itemStackToString).collect(Collectors.toCollection(NonNullList::create));
+            saveAsJson(this.unbalancedFile, res);
         } else {
             loadAsJson(this.unbalancedFile, String.class).forEach(c -> {
                 ItemStack currentStack = stringToItemStack(c);
@@ -163,7 +162,8 @@ public class RecyclingManager {
     private void loadBlacklist() {
         if (!this.blacklistFile.exists()) {
             addToCollection(this.blacklist, ModBlocks.recycler);
-            saveAsJson(this.blacklistFile, this.blacklist.stream().map(this::itemStackToString).collect(Collectors.toList()));
+            NonNullList<String> res = this.blacklist.stream().map(this::itemStackToString).collect(Collectors.toCollection(NonNullList::create));
+            saveAsJson(this.blacklistFile, res);
         } else {
             loadAsJson(this.blacklistFile, String.class).forEach(c -> {
                 ItemStack currentStack = stringToItemStack(c);
@@ -175,7 +175,7 @@ public class RecyclingManager {
     }
 
     private void saveBlacklist() {
-        List<String> blacklistItems = new ArrayList<>();
+        NonNullList<String> blacklistItems = NonNullList.create();
         this.recipes.stream().filter(p -> !p.isAllowed()).forEach(c -> blacklistItems.add(itemStackToString(c.getItemRecipe())));
         saveAsJson(this.blacklistFile, blacklistItems);
     }
@@ -206,8 +206,8 @@ public class RecyclingManager {
         return true;
     }
 
-    public List<RecyclingRecipe> getRecipesForSearch(String searchText) {
-        return this.recipes.stream().filter(p -> p.isAllowed() && (ConfigRecycler.general.unbalanced_recipes.get() || !p.isUnbalanced()) && (searchText.isEmpty() || p.getItemRecipe().getDisplayName().getUnformattedComponentText().toLowerCase().contains(searchText))).collect(Collectors.toList());
+    public NonNullList<RecyclingRecipe> getRecipesForSearch(String searchText) {
+        return this.recipes.stream().filter(p -> p.isAllowed() && (ConfigRecycler.general.unbalanced_recipes.get() || !p.isUnbalanced()) && (searchText.isEmpty() || p.getItemRecipe().getDisplayName().getUnformattedComponentText().toLowerCase().contains(searchText))).collect(Collectors.toCollection(NonNullList::create));
     }
 
     @Nullable
@@ -245,13 +245,13 @@ public class RecyclingManager {
         return stack.isEmpty() ? -1 : IntStream.range(0, this.recipes.size()).filter(slotId -> Helper.areItemEqual(stack, this.recipes.get(slotId).getItemRecipe())).findFirst().orElse(-1);
     }
 
-    public List<ItemStack> getResultStack(ItemStack stack, int nb_input) {
+    public NonNullList<ItemStack> getResultStack(ItemStack stack, int nb_input) {
         return getResultStack(stack, nb_input, false);
     }
 
     // TODO clean this
-    public List<ItemStack> getResultStack(ItemStack stack, int nb_input, boolean half) {
-        List<ItemStack> itemsList = new ArrayList<>();
+    public NonNullList<ItemStack> getResultStack(ItemStack stack, int nb_input, boolean half) {
+        NonNullList<ItemStack> itemsList = NonNullList.create();
         int num_recipe = hasRecipe(stack);
         if (num_recipe < 0) {
             return itemsList;
@@ -264,13 +264,13 @@ public class RecyclingManager {
         // foreach stacks in the recipe
         for (int i = 0; i < currentRecipe.getCount(); i++) {
             // smaller units for damaged items and when there're losses
-            ItemStack grind = isDamagedStack || half ? getGrind(currentRecipe.getStack(i)) : ItemStack.EMPTY;
+            ItemStack grind = isDamagedStack || half ? getGrind(currentRecipe.getResult(i)) : ItemStack.EMPTY;
             if (grind.isEmpty()) {
-                currentStack = currentRecipe.getStack(i).copy();
+                currentStack = currentRecipe.getResult(i).copy();
                 currentSize = currentStack.getCount();
             } else {
                 currentStack = grind;
-                currentSize = currentRecipe.getStack(i).getCount() * grind.getCount();
+                currentSize = currentRecipe.getResult(i).getCount() * grind.getCount();
             }
             float modifiedSize = currentSize;
             // reduces the stacksize based on damages
@@ -303,9 +303,9 @@ public class RecyclingManager {
         return itemsList;
     }
 
-    private List<ItemStack> getEnchantedBooks(ItemStack stack) {
+    private NonNullList<ItemStack> getEnchantedBooks(ItemStack stack) {
         Map<Enchantment, Integer> enchants = EnchantmentHelper.getEnchantments(stack).entrySet().stream().filter(p -> p.getKey() != null && p.getValue() != null).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-        List<ItemStack> books = new ArrayList<>();
+        NonNullList<ItemStack> books = NonNullList.create();
         if (!enchants.isEmpty()) {
             if (stack.getItem() == Items.ENCHANTED_BOOK) {
                 // skip if the book has only one enchant
@@ -336,11 +336,12 @@ public class RecyclingManager {
             this.grindList.add(new ImmutablePair(new ItemStack(Items.GOLD_INGOT), new ItemStack(Items.GOLD_NUGGET, 9)));
             this.grindList.add(new ImmutablePair(new ItemStack(Items.LEATHER), new ItemStack(Items.RABBIT_HIDE, 4)));
             this.grindList.add(new ImmutablePair(new ItemStack(Blocks.OAK_PLANKS), new ItemStack(Items.STICK, 4)));
-            saveAsJson(this.grindFile, this.grindList.stream().map(p -> new ImmutablePair(itemStackToString(p.getLeft()), itemStackToString(p.getRight()))).collect(Collectors.toList()));
+            NonNullList<ImmutablePair> res = this.grindList.stream().map(p -> new ImmutablePair(itemStackToString(p.getLeft()), itemStackToString(p.getRight()))).collect(Collectors.toCollection(NonNullList::create));
+            saveAsJson(this.grindFile, res);
         } else {
-            Type token = new TypeToken<List<ImmutablePair<String, String>>>() {
+            Type token = new TypeToken<NonNullList<ImmutablePair<String, String>>>() {
             }.getType();
-            List<ImmutablePair<String, String>> jsonStringList = (List<ImmutablePair<String, String>>) loadAsJson(this.grindFile, token);
+            NonNullList<ImmutablePair<String, String>> jsonStringList = (NonNullList<ImmutablePair<String, String>>) loadAsJson(this.grindFile, token);
             ItemStack input, output;
             for (ImmutablePair<String, String> pair : jsonStringList) {
                 input = stringToItemStack(pair.getLeft());
@@ -363,7 +364,7 @@ public class RecyclingManager {
     }
 
     private boolean saveUserDefinedRecipes() {
-        List<JsonRecyclingRecipe> jRecipes = new ArrayList<>();
+        NonNullList<JsonRecyclingRecipe> jRecipes = NonNullList.create();
         for (RecyclingRecipe recipe : this.recipes) {
             if (recipe.isUserDefined()) {
                 jRecipes.add(convertRecipeToJson(recipe));
@@ -372,7 +373,7 @@ public class RecyclingManager {
         return saveAsJson(this.userDefinedFile, jRecipes);
     }
 
-    public boolean saveAsJson(File file, List<?> list) {
+    public boolean saveAsJson(File file, NonNullList<?> list) {
         if (file.exists()) {
             if (!file.delete()) {
                 LOGGER.warn("can't delete file " + file.getName());
@@ -391,8 +392,8 @@ public class RecyclingManager {
         return false;
     }
 
-    private List<?> loadAsJson(File file, Type token) {
-        List<?> list = new ArrayList<>();
+    private NonNullList<?> loadAsJson(File file, Type token) {
+        NonNullList<?> list = NonNullList.create();
         try {
             list = new Gson().fromJson(new BufferedReader(new FileReader(file)), token);
         } catch (Exception e) {
@@ -401,8 +402,8 @@ public class RecyclingManager {
         return list;
     }
 
-    private static <T> List<T> loadAsJson(File file, Class<T> type) {
-        List<T> list = new ArrayList<>();
+    private static <T> NonNullList<T> loadAsJson(File file, Class<T> type) {
+        NonNullList<T> list = NonNullList.create();
         try {
             JsonArray arrayDatas = new JsonParser().parse(new BufferedReader(new FileReader(file))).getAsJsonArray();
             for (JsonElement elem : arrayDatas) {
@@ -415,9 +416,9 @@ public class RecyclingManager {
     }
 
     private void loadUserDefinedRecipes() {
-        List<JsonRecyclingRecipe> jsonRecipesList;
+        NonNullList<JsonRecyclingRecipe> jsonRecipesList;
         if (!this.userDefinedFile.exists()) {
-            jsonRecipesList = new ArrayList<>();
+            jsonRecipesList = NonNullList.create();
             jsonRecipesList.add(new JsonRecyclingRecipe(MOD_ID + ":recycler:1", new String[] { "minecraft:acacia_planks:4", "minecraft:iron_ingot:4", "minecraft:chest:1" }));
             saveAsJson(this.userDefinedFile, jsonRecipesList);
         } else {
@@ -462,7 +463,7 @@ public class RecyclingManager {
         }
         String[] outputItems = new String[recipe.getCount()];
         for (int i = 0; i < recipe.getCount(); i++) {
-            String outputItem = itemStackToString(recipe.getStack(i));
+            String outputItem = itemStackToString(recipe.getResult(i));
             outputItems[i] = outputItem;
         }
         return new JsonRecyclingRecipe(inputItem, outputItems);
@@ -498,7 +499,7 @@ public class RecyclingManager {
 
     public <T extends IRecipe> RecyclingRecipe convertCraftingRecipe(T iRecipe) {
         NonNullList<Ingredient> ingredients = iRecipe.getIngredients();
-        RecyclingRecipe recipe = new RecyclingRecipe(iRecipe.getRecipeOutput(), Helper.mergeStackInList(ingredients.stream().filter(p -> p.getMatchingStacks().length > 0 && !p.getMatchingStacks()[0].isEmpty()).map(m -> m.getMatchingStacks()[0]).collect(Collectors.toList())));
+        RecyclingRecipe recipe = new RecyclingRecipe(iRecipe.getRecipeOutput(), Helper.mergeStackInList(ingredients.stream().filter(p -> p.getMatchingStacks().length > 0 && !p.getMatchingStacks()[0].isEmpty()).map(m -> m.getMatchingStacks()[0]).collect(Collectors.toCollection(NonNullList::create))));
         recipe.setUnbalanced(false);
         recipe.setUserDefined(true);
         recipe.setAllowed(true);

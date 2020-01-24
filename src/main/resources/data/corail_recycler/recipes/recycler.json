@@ -1,6 +1,6 @@
 {
 "type":"crafting_shaped",
 "pattern":["010","121","010"],
-"key":{"0":{"tag":"minecraft:planks"},"1":{"item": "minecraft:iron_ingot"},"2":{"item":"minecraft:chest"}},
+"key":{"0":{"tag":"minecraft:planks"},"1":{"tag": "forge:ingots/iron"},"2":{"tag":"forge:chests"}},
 "result":{"item":"corail_recycler:recycler"}
 }

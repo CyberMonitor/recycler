@@ -8,7 +8,7 @@
 			"trigger": "minecraft:inventory_changed",
 			"conditions": {
 				"items": [{
-					"item": "corail_recycler:diamond_shard"
+					"tag": "forge:nuggets/diamond"
 				}]
 			}
 		},
@@ -16,7 +16,7 @@
 			"trigger": "minecraft:inventory_changed",
 			"conditions": {
 				"items": [{
-					"item": "minecraft:iron_ingot"
+					"tag": "forge:ingots/iron"
 				}]
 			}
 		}

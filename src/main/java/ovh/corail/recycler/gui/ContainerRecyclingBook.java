@@ -6,12 +6,11 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IntReferenceHolder;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.ItemStackHandler;
 import ovh.corail.recycler.registry.ModContainers;
 import ovh.corail.recycler.util.RecyclingManager;
 import ovh.corail.recycler.util.RecyclingRecipe;
-
-import java.util.List;
 
 public class ContainerRecyclingBook extends Container {
     private final IntReferenceHolder pageNum = IntReferenceHolder.single(), pageMax = IntReferenceHolder.single();
@@ -35,7 +34,7 @@ public class ContainerRecyclingBook extends Container {
     }
 
     public void initPage(int pageNum) {
-        List<RecyclingRecipe> recipes = RecyclingManager.instance.getRecipesForSearch(this.searchText);
+        NonNullList<RecyclingRecipe> recipes = RecyclingManager.instance.getRecipesForSearch(this.searchText);
         this.pageMax.set(recipes.size() / 4);
         this.pageNum.set(Math.min(pageNum, this.pageMax.get()));
         int skipped = this.pageNum.get() * 4;
@@ -45,7 +44,7 @@ public class ContainerRecyclingBook extends Container {
             RecyclingRecipe recipe = recipes.get(recipeId);
             BOOK_INVENTORY.setStackInSlot(slotId++, recipe.getItemRecipe());
             for (int i = 0; i < 9; i++) {
-                BOOK_INVENTORY.setStackInSlot(slotId++, i < recipe.getCount() ? recipe.getStack(i) : ItemStack.EMPTY);
+                BOOK_INVENTORY.setStackInSlot(slotId++, i < recipe.getCount() ? recipe.getResult(i) : ItemStack.EMPTY);
             }
         }
         while (slotId < 40) {

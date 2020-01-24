@@ -1,69 +1,73 @@
 package ovh.corail.recycler.util;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+
 
 public class RecyclingRecipe {
     private final ItemStack itemRecipe;
     private boolean isUnbalanced = false;
     private boolean isUserDefined = false;
     private boolean isAllowed = true;
-    private final List<ItemStack> itemsList = new ArrayList<>();
+    private final NonNullList<ItemStack> itemsList = NonNullList.create();
 
     RecyclingRecipe(ItemStack itemStack) {
         this.itemRecipe = itemStack;
     }
 
-    RecyclingRecipe(ItemStack stackIn, List<ItemStack> stacksOut) {
-        itemRecipe = stackIn;
-        itemsList.addAll(stacksOut);
+    RecyclingRecipe(ItemStack stackIn, NonNullList<ItemStack> stacksOut) {
+        this.itemRecipe = stackIn;
+        this.itemsList.addAll(stacksOut);
     }
 
     RecyclingRecipe(ItemStack stackIn, ItemStack[] stacksOut) {
-        itemRecipe = stackIn;
+        this.itemRecipe = stackIn;
         Collections.addAll(itemsList, stacksOut);
     }
 
     public ItemStack getItemRecipe() {
-        return itemRecipe;
+        return this.itemRecipe;
     }
 
     void setUnbalanced(boolean state) {
-        isUnbalanced = state;
+        this.isUnbalanced = state;
     }
 
     boolean isUnbalanced() {
-        return isUnbalanced;
+        return this.isUnbalanced;
     }
 
     void setUserDefined(boolean state) {
-        isUserDefined = state;
+        this.isUserDefined = state;
     }
 
     boolean isUserDefined() {
-        return isUserDefined;
+        return this.isUserDefined;
     }
 
     void setAllowed(boolean state) {
-        isAllowed = state;
+        this.isAllowed = state;
     }
 
     boolean isAllowed() {
-        return isAllowed;
+        return this.isAllowed;
     }
 
     public Integer getCount() {
-        return itemsList.size();
+        return this.itemsList.size();
     }
 
     void addStack(ItemStack stack) {
-        itemsList.add(stack);
+        this.itemsList.add(stack);
     }
 
-    public ItemStack getStack(int index) {
-        return itemsList.get(index);
+    public ItemStack getResult(int index) {
+        return this.itemsList.get(index);
+    }
+
+    public NonNullList<ItemStack> getResult() {
+        return this.itemsList;
     }
 }

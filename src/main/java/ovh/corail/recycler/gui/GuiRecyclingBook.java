@@ -15,7 +15,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import ovh.corail.recycler.network.PacketHandler;
 import ovh.corail.recycler.network.ServerRecyclingBookMessage;
 import ovh.corail.recycler.network.ServerRecyclingBookMessage.RecyclingBookAction;
-import ovh.corail.recycler.util.TranslationHelper.LangKey;
+import ovh.corail.recycler.util.LangKey;
 
 import static ovh.corail.recycler.ModRecycler.MOD_ID;
 

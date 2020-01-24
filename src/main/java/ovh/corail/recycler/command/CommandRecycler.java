@@ -9,15 +9,13 @@ import net.minecraft.command.arguments.ItemInput;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.StringTextComponent;
 import ovh.corail.recycler.util.JsonRecyclingRecipe;
 import ovh.corail.recycler.util.RecyclingManager;
-import ovh.corail.recycler.util.TranslationHelper;
-import ovh.corail.recycler.util.TranslationHelper.LangKey;
+import ovh.corail.recycler.util.LangKey;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CommandRecycler {
     private final CommandDispatcher<CommandSource> commandDispatcher;
@@ -43,9 +41,9 @@ public class CommandRecycler {
         );
     }
 
-    private int processAddRecipe(CommandSource source, ItemInput stack) {
+    private int processAddRecipe(CommandSource source, ItemInput stack) throws CommandSyntaxException {
+        ServerPlayerEntity player = source.asPlayer();
         try {
-            ServerPlayerEntity player = source.asPlayer();
             RecyclingManager.instance.discoverRecipe(player, stack == null ? player.getHeldItemMainhand() : stack.createStack(1, false));
             return 1;
         } catch (Exception e) {
@@ -57,16 +55,16 @@ public class CommandRecycler {
     private int processRemoveRecipe(CommandSource source, ItemInput stack) throws CommandSyntaxException {
         ServerPlayerEntity player = source.asPlayer();
         boolean success = RecyclingManager.instance.removeRecipe(stack == null ? player.getHeldItemMainhand() : stack.createStack(1, false));
-        TranslationHelper.sendMessage(player, success ? LangKey.MESSAGE_REMOVE_RECIPE_SUCCESS : LangKey.MESSAGE_REMOVE_RECIPE_FAILED);
+        (success ? LangKey.MESSAGE_REMOVE_RECIPE_SUCCESS : LangKey.MESSAGE_REMOVE_RECIPE_FAILED).sendMessage(player);
         return success ? 1 : 0;
     }
 
-    private int processExportCraftingRecipes(CommandSource source) {
+    private int processExportCraftingRecipes(CommandSource source) throws CommandSyntaxException {
+        ServerPlayerEntity player = source.asPlayer();
         // TODO check this
         try {
-            ServerPlayerEntity player = source.asPlayer();
             RecyclingManager rm = RecyclingManager.instance;
-            List<JsonRecyclingRecipe> list = new ArrayList<>();
+            NonNullList<JsonRecyclingRecipe> list = NonNullList.create();
             for (IRecipe crafting_recipe : player.world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values()) {
                 // only recipes not in the recycler
                 if (!crafting_recipe.getRecipeOutput().isEmpty() && rm.hasRecipe(crafting_recipe.getRecipeOutput()) == -1) {
@@ -77,9 +75,9 @@ public class CommandRecycler {
                 }
             }
             File exportFile = new File(RecyclingManager.instance.CONFIG_DIR, "export_crafting_recipes.json");
-            TranslationHelper.sendMessage(player, LangKey.MESSAGE_FOUND_RECIPES, list.size());
+            LangKey.MESSAGE_FOUND_RECIPES.sendMessage(player, list.size());
             boolean success = rm.saveAsJson(exportFile, list);
-            TranslationHelper.sendMessage(player, success ? LangKey.MESSAGE_EXPORT_SUCCESS : LangKey.MESSAGE_EXPORT_FAILED);
+            (success ? LangKey.MESSAGE_EXPORT_SUCCESS : LangKey.MESSAGE_EXPORT_FAILED).sendMessage(player);
             return 1;
         } catch (Exception e) {
             e.printStackTrace();

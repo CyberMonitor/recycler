@@ -16,7 +16,7 @@ import ovh.corail.recycler.network.ServerRecyclerMessage;
 import ovh.corail.recycler.network.ServerRecyclerMessage.RecyclerAction;
 import ovh.corail.recycler.network.ServerRecyclingBookMessage;
 import ovh.corail.recycler.network.ServerRecyclingBookMessage.RecyclingBookAction;
-import ovh.corail.recycler.util.TranslationHelper.LangKey;
+import ovh.corail.recycler.util.LangKey;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -158,7 +158,6 @@ public class GuiRecycler extends ContainerScreen<ContainerRecycler> {
         // button take all
         this.buttons.get(2).active = !this.container.getRecycler().isOutputEmpty();
         // button create recipe
-
         this.buttons.get(3).active = this.buttons.get(3).visible = hasPermission && !hasRecipe && !isEmptySlot;
         // button remove recipe
         this.buttons.get(4).active = this.buttons.get(4).visible = hasPermission && hasRecipe && !isEmptySlot;

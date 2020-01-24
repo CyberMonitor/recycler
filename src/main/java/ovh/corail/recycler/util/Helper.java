@@ -3,11 +3,15 @@ package ovh.corail.recycler.util;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.NonNullList;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Helper {
@@ -33,8 +37,8 @@ public class Helper {
         return !s1.isEmpty() && s1.getItem() == s2.getItem();
     }
 
-    public static List<ItemStack> mergeStackInList(List<ItemStack> itemStackList) {
-        List<ItemStack> outputList = new ArrayList<>();
+    public static NonNullList<ItemStack> mergeStackInList(NonNullList<ItemStack> itemStackList) {
+        NonNullList<ItemStack> outputList = NonNullList.create();
         for (ItemStack stack : itemStackList) {
             ItemStack currentStack = stack.copy();
             // looking for existing same stack
@@ -56,5 +60,16 @@ public class Helper {
             }
         }
         return outputList;
+    }
+
+    @SuppressWarnings("all")
+    @Nonnull
+    public static <T extends IForgeRegistryEntry> T getDefaultNotNull() {
+        return null;
+    }
+
+    public static CompoundNBT removeTagFromNBT(CompoundNBT nbt, String... names) {
+        Arrays.stream(names).filter(name -> nbt.contains(name, Constants.NBT.TAG_COMPOUND)).forEach(nbt::remove);
+        return nbt;
     }
 }

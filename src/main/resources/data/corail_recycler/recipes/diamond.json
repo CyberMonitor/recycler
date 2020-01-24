@@ -1,6 +1,6 @@
 {
 "type":"crafting_shaped",
 "pattern":["000","000","000"],
-"key":{"0":{"item": "corail_recycler:diamond_shard"}},
+"key":{"0":{"tag": "forge:nuggets/diamond"}},
 "result":{"item":"minecraft:diamond"}
 }

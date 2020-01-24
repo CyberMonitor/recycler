@@ -11,8 +11,7 @@ import ovh.corail.recycler.block.BlockRecycler;
 import ovh.corail.recycler.registry.ModTriggers;
 import ovh.corail.recycler.tileentity.TileEntityRecycler;
 import ovh.corail.recycler.util.RecyclingManager;
-import ovh.corail.recycler.util.TranslationHelper;
-import ovh.corail.recycler.util.TranslationHelper.LangKey;
+import ovh.corail.recycler.util.LangKey;
 
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
@@ -72,7 +71,7 @@ public class ServerRecyclerMessage {
                                 if (success) {
                                     recycler.updateRecyclingRecipe();
                                 }
-                                TranslationHelper.sendMessage(player, success ? LangKey.MESSAGE_REMOVE_RECIPE_SUCCESS : LangKey.MESSAGE_REMOVE_RECIPE_FAILED);
+                                (success ? LangKey.MESSAGE_REMOVE_RECIPE_SUCCESS : LangKey.MESSAGE_REMOVE_RECIPE_FAILED).sendMessage(player);
                                 break;
                         }
                     }
