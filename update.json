@@ -1,5 +1,8 @@
 {
 	"homepage": "https://minecraft.curseforge.com/projects/corail-recycler",
+	"1.14.4": {
+		"4.0.0": "first beta for 1.14.4, to get some feedbacks before improving it"
+	},
 	"1.13.2": {
 		"3.3.1": "add back the recycling book & fix the button discovery when no disk",
 		"3.3.0": "first port to 1.13.2 (only the recycling book is disabled)"
@@ -28,6 +31,8 @@
 		"1.4.7": "allow to separate enchantments from an enchanted book (with an option to disable it), improve russian translation"
 	},
 	"promos": {
+		"1.14.4-latest": "4.0.0",
+		"1.14.4-recommended": "4.0.0",
 		"1.13.2-latest": "3.3.1",
 		"1.13.2-recommended": "3.3.1",
 		"1.12.2-latest": "3.2.4",
