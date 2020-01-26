@@ -42,7 +42,7 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
             }
         }));
         addButton(new ButtonRecyclingBook(true, this.guiLeft + 208, this.guiTop + 135, pressable -> {
-            if (this.container.getPageNum() + 1 < this.container.getPageMax()) {
+            if (this.container.getPageNum() < this.container.getPageMax()) {
                 PacketHandler.sendToServer(new ServerRecyclingBookMessage(RecyclingBookAction.CHANGE_PAGE, this.container.getPageNum() + 1));
             }
         }));
@@ -68,8 +68,8 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
             this.container.setPageNum(0);
             updateButton(0, false);
             updateButton(1, this.container.getPageMax() > 0);
-        } else if (this.container.getPageNum() + 1 >= this.container.getPageMax()) {
-            this.container.setPageNum(this.container.getPageMax() - 1);
+        } else if (this.container.getPageNum() >= this.container.getPageMax()) {
+            this.container.setPageNum(this.container.getPageMax());
             updateButton(0, true);
             updateButton(1, false);
         } else {
@@ -153,7 +153,7 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
         // name of the recipe
         this.container.inventorySlots.stream().filter(p -> p.getSlotIndex() % 10 == 0 && !p.getStack().isEmpty()).forEach(c -> drawString(this.font, c.getStack().getDisplayName().getUnformattedComponentText(), (c.xPos - 2) * 2, (c.yPos - 22) * 2, 13938487));
         // page number
-        this.font.drawStringWithShadow((this.container.getPageNum() + 1) + "/" + this.container.getPageMax(), 428, 240, 13938487);
+        this.font.drawStringWithShadow((this.container.getPageNum() + 1) + "/" + (this.container.getPageMax() + 1), 428, 240, 13938487);
         GlStateManager.popMatrix();
         // title of the book
         String title = TextFormatting.BOLD + I18n.format(LangKey.MESSAGE_RECYCLING_BOOK.getKey());

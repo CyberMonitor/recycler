@@ -19,6 +19,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -188,7 +189,7 @@ public class RecyclingManager {
     }
 
     public NonNullList<RecyclingRecipe> getRecipesForSearch(String searchText) {
-        return this.recipes.stream().filter(p -> p.isAllowed() && (ConfigRecycler.general.unbalanced_recipes.get() || !p.isUnbalanced()) && (searchText.isEmpty() || p.getItemRecipe().getItem().getTranslationKey().contains(searchText))).collect(Collectors.toCollection(NonNullList::create));
+        return this.recipes.stream().filter(p -> p.isAllowed() && (ConfigRecycler.general.unbalanced_recipes.get() || !p.isUnbalanced()) && (searchText.isEmpty() || new TranslationTextComponent(p.getItemRecipe().getItem().getTranslationKey()).getFormattedText().toLowerCase().contains(searchText))).collect(Collectors.toCollection(NonNullList::create));
     }
 
     @Nullable

@@ -39,7 +39,7 @@ public class ContainerRecyclingBook extends Container {
         this.pageNum.set(Math.min(pageNum, this.pageMax.get()));
         int skipped = this.pageNum.get() * 4;
         int slotId = 0;
-        int recipeIdMax = Math.min(skipped + 4, recipes.size() - 1);
+        int recipeIdMax = Math.min(skipped + 4, recipes.size());
         for (int recipeId = skipped; recipeId < recipeIdMax; recipeId++) {
             RecyclingRecipe recipe = recipes.get(recipeId);
             BOOK_INVENTORY.setStackInSlot(slotId++, recipe.getItemRecipe().asItemStack());
