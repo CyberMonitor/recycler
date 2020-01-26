@@ -12,8 +12,8 @@ import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.StringTextComponent;
 import ovh.corail.recycler.util.JsonRecyclingRecipe;
-import ovh.corail.recycler.util.RecyclingManager;
 import ovh.corail.recycler.util.LangKey;
+import ovh.corail.recycler.util.RecyclingManager;
 
 import java.io.File;
 

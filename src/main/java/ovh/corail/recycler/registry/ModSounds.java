@@ -17,12 +17,8 @@ public class ModSounds {
     public static final SoundEvent RECYCLER = Helper.getDefaultNotNull();
     public static final SoundEvent RECYCLER_WORKING = Helper.getDefaultNotNull();
 
-    public static void playSoundAllAround(@Nullable SoundEvent sound, SoundCategory cat, World world, BlockPos pos) {
-        playSoundAllAround(sound, cat, world, pos, 1f, 1f);
-    }
-
     public static void playSoundAllAround(@Nullable SoundEvent sound, SoundCategory cat, World world, BlockPos pos, float volume, float pitch) {
-        if (!world.isRemote && sound != null && !ConfigRecycler.general.allow_sound.get()) {
+        if (!world.isRemote && sound != null && ConfigRecycler.general.allow_sound.get()) {
             world.playSound(null, pos, sound, cat, volume, pitch);
         }
     }

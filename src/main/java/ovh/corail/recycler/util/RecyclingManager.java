@@ -38,7 +38,6 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -50,7 +49,7 @@ import static ovh.corail.recycler.ModRecycler.MOD_ID;
 
 public class RecyclingManager {
     public static final RecyclingManager instance = new RecyclingManager();
-    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+    private final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
     private final NonNullList<RecyclingRecipe> recipes = NonNullList.create();
     private final Set<ItemStack> unbalanced = new HashSet<>();
     private final Set<ItemStack> blacklist = new HashSet<>();
@@ -402,7 +401,7 @@ public class RecyclingManager {
         return list;
     }
 
-    private static <T> NonNullList<T> loadAsJson(File file, Class<T> type) {
+    private <T> NonNullList<T> loadAsJson(File file, Class<T> type) {
         NonNullList<T> list = NonNullList.create();
         try {
             JsonArray arrayDatas = new JsonParser().parse(new BufferedReader(new FileReader(file))).getAsJsonArray();

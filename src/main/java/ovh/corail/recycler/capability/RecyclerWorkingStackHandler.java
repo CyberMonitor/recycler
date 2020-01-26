@@ -2,14 +2,14 @@ package ovh.corail.recycler.capability;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
-import ovh.corail.recycler.registry.ModItems;
+import ovh.corail.recycler.registry.ModTags;
 
 import java.util.function.Predicate;
 
 public class RecyclerWorkingStackHandler extends ItemStackHandler {
     public enum EnumSlot {
-        ITEM(p -> p.getItem() != ModItems.diamond_disk),
-        DISK(p -> p.getItem() == ModItems.diamond_disk);
+        ITEM(p -> ModTags.Items.disks.contains(p.getItem())),
+        DISK(p -> !ModTags.Items.disks.contains(p.getItem()));
         public final Predicate<ItemStack> predic;
 
         EnumSlot(Predicate<ItemStack> predic) {
@@ -26,7 +26,7 @@ public class RecyclerWorkingStackHandler extends ItemStackHandler {
     }
 
     @Override
-    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-        return EnumSlot.isItemValid(slot, stack) ? super.insertItem(slot, stack, simulate) : stack;
+    public boolean isItemValid(int slot, ItemStack stack) {
+        return EnumSlot.isItemValid(slot, stack);
     }
 }

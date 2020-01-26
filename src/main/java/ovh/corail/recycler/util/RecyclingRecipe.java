@@ -5,7 +5,6 @@ import net.minecraft.util.NonNullList;
 
 import java.util.Collections;
 
-
 public class RecyclingRecipe {
     private final ItemStack itemRecipe;
     private boolean isUnbalanced = false;

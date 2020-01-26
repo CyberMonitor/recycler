@@ -20,20 +20,19 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import ovh.corail.recycler.ConfigRecycler;
 import ovh.corail.recycler.block.BlockRecycler;
-import ovh.corail.recycler.capability.EnergyStorageMutable;
 import ovh.corail.recycler.capability.RecyclerWorkingStackHandler;
-import ovh.corail.recycler.registry.ModItems;
 import ovh.corail.recycler.registry.ModSounds;
 import ovh.corail.recycler.registry.ModTileEntityTypes;
 import ovh.corail.recycler.util.Helper;
+import ovh.corail.recycler.util.LangKey;
 import ovh.corail.recycler.util.RecyclingManager;
 import ovh.corail.recycler.util.RecyclingRecipe;
-import ovh.corail.recycler.util.LangKey;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -47,7 +46,7 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
     private final ItemStackHandler inventWorking = new RecyclerWorkingStackHandler();
     private final ItemStackHandler inventOutput = new ItemStackHandler(18);
     private final ItemStackHandler inventVisual = new ItemStackHandler(9); // not serialized
-    private final EnergyStorageMutable energyStorage = new EnergyStorageMutable();
+    private final EnergyStorage energyStorage = new EnergyStorage(10000, 20, 10);
 
     private String customName;
     private boolean isWorking = false;
@@ -111,7 +110,7 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
             left = stackIn.getCount();
             maxSize = stackIn.getMaxStackSize();
             // each stack of the output List
-            for (int slot = 0 ; slot < this.inventOutput.getSlots() ; slot++) {
+            for (int slot = 0; slot < this.inventOutput.getSlots(); slot++) {
                 stackOut = this.inventOutput.getStackInSlot(slot);
                 // output stack empty or max stacksize
                 if (stackOut.isEmpty() || stackOut.getCount() == stackOut.getMaxStackSize()) {
@@ -173,6 +172,7 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
     }
 
     public boolean recycle(@Nullable ServerPlayerEntity player) {
+        assert this.world != null;
         //TODO clean this method
         RecyclingManager recyclingManager = RecyclingManager.instance;
         final ItemStack workingStack = inventWorking.getStackInSlot(0);
@@ -261,7 +261,7 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
                 // transfer the fullstack if the working slot is empty
                 IntStream.range(0, this.inventInput.getSlots()).filter(slot -> {
                     ItemStack stackInSlot = this.inventInput.getStackInSlot(slot);
-                    return !stackInSlot.isEmpty() && stackInSlot.getItem() != ModItems.diamond_disk;
+                    return !stackInSlot.isEmpty() && this.inventWorking.isItemValid(0, stackInSlot);
                 }).findFirst().ifPresent(slot -> {
                     this.inventWorking.insertItem(0, this.inventInput.extractItem(slot, this.inventInput.getStackInSlot(slot).getCount(), false), false);
                     updateRecyclingRecipe();
@@ -275,7 +275,7 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
             }
             if (this.inventWorking.getStackInSlot(1).isEmpty()) {
                 // replace disk if needed
-                IntStream.range(0, this.inventInput.getSlots()).filter(slotId -> this.inventInput.getStackInSlot(slotId).getItem() == ModItems.diamond_disk).findFirst().ifPresent(slotId -> {
+                IntStream.range(0, this.inventInput.getSlots()).filter(slotId -> this.inventWorking.isItemValid(1, this.inventInput.getStackInSlot(slotId))).findFirst().ifPresent(slotId -> {
                     this.inventWorking.insertItem(1, this.inventInput.extractItem(slotId, 1, false), false);
                     updateRecyclingRecipe();
                 });
@@ -406,10 +406,6 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
         return energyStorage.getEnergyStored();
     }
 
-    public void setEnergy(int energy) {
-        energyStorage.setEnergyStored(energy);
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
@@ -427,10 +423,15 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
 
     @Override
     public CompoundNBT write(CompoundNBT compound) {
-        super.write(compound);
+        writeShareDatas(compound);
         compound.put("invent_input", inventInput.serializeNBT());
         compound.put("invent_working", inventWorking.serializeNBT());
         compound.put("invent_output", inventOutput.serializeNBT());
+        return compound;
+    }
+
+    private CompoundNBT writeShareDatas(CompoundNBT compound) {
+        super.write(compound);
         if (hasCustomName()) {
             compound.putString("custom_name", customName);
         }
@@ -463,7 +464,7 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
 
     @Override
     public CompoundNBT getUpdateTag() {
-        return Helper.removeTagFromNBT(write(new CompoundNBT()), "invent_output", "invent_input", "invent_working");
+        return writeShareDatas(new CompoundNBT());
     }
 
     @Override

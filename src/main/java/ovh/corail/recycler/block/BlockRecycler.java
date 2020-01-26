@@ -60,16 +60,6 @@ public class BlockRecycler extends Block {
     }
 
     @Override
-    public ToolType getHarvestTool(BlockState state) {
-        return ToolType.PICKAXE;
-    }
-
-    @Override
-    public int getHarvestLevel(BlockState state) {
-        return 0;
-    }
-
-    @Override
     public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
         return false;
     }
@@ -158,6 +148,8 @@ public class BlockRecycler extends Block {
     public static Properties getBuilder() {
         return Properties.create(Material.ROCK)
                 .hardnessAndResistance(5f, 20f)
-                .sound(SoundType.STONE);
+                .sound(SoundType.STONE)
+                .harvestTool(ToolType.PICKAXE)
+                .harvestLevel(0);
     }
 }
