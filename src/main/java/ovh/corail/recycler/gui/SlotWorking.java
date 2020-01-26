@@ -17,8 +17,8 @@ public class SlotWorking extends SlotRecycler {
     public void onSlotChanged() {
         World world = this.container.getRecycler().getWorld();
         if (world != null && !world.isRemote) {
-            container.getRecycler().updateRecyclingRecipe();
-            container.detectAndSendChanges();
+            this.container.getRecycler().updateRecyclingRecipe();
+            this.container.detectAndSendChanges();
         }
     }
 }

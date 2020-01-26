@@ -8,8 +8,8 @@ import java.util.function.Predicate;
 
 public class RecyclerWorkingStackHandler extends ItemStackHandler {
     public enum EnumSlot {
-        ITEM(p -> ModTags.Items.disks.contains(p.getItem())),
-        DISK(p -> !ModTags.Items.disks.contains(p.getItem()));
+        ITEM(p -> !ModTags.Items.disks.contains(p.getItem())),
+        DISK(p -> ModTags.Items.disks.contains(p.getItem()));
         public final Predicate<ItemStack> predic;
 
         EnumSlot(Predicate<ItemStack> predic) {

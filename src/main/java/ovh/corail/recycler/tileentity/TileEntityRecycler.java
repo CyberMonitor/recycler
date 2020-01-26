@@ -469,7 +469,7 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
 
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(pos, 1, getUpdateTag());
+        return new SUpdateTileEntityPacket(pos, 1, write(new CompoundNBT()));
     }
 
     @Override
