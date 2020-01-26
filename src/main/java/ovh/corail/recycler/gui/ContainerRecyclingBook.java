@@ -42,9 +42,9 @@ public class ContainerRecyclingBook extends Container {
         int recipeIdMax = Math.min(skipped + 4, recipes.size() - 1);
         for (int recipeId = skipped; recipeId < recipeIdMax; recipeId++) {
             RecyclingRecipe recipe = recipes.get(recipeId);
-            BOOK_INVENTORY.setStackInSlot(slotId++, recipe.getItemRecipe());
+            BOOK_INVENTORY.setStackInSlot(slotId++, recipe.getItemRecipe().asItemStack());
             for (int i = 0; i < 9; i++) {
-                BOOK_INVENTORY.setStackInSlot(slotId++, i < recipe.getCount() ? recipe.getResult(i) : ItemStack.EMPTY);
+                BOOK_INVENTORY.setStackInSlot(slotId++, i < recipe.getCount() ? recipe.getResult(i).asItemStack() : ItemStack.EMPTY);
             }
         }
         while (slotId < 40) {

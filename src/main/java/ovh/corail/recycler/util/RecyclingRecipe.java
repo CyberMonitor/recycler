@@ -1,32 +1,31 @@
 package ovh.corail.recycler.util;
 
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
 import java.util.Collections;
 
 public class RecyclingRecipe {
-    private final ItemStack itemRecipe;
+    private final SimpleStack itemRecipe;
     private boolean isUnbalanced = false;
     private boolean isUserDefined = false;
     private boolean isAllowed = true;
-    private final NonNullList<ItemStack> itemsList = NonNullList.create();
+    private final NonNullList<SimpleStack> itemsList = NonNullList.create();
 
-    RecyclingRecipe(ItemStack itemStack) {
-        this.itemRecipe = itemStack;
+    RecyclingRecipe(SimpleStack stack) {
+        this.itemRecipe = stack;
     }
 
-    RecyclingRecipe(ItemStack stackIn, NonNullList<ItemStack> stacksOut) {
-        this.itemRecipe = stackIn;
+    RecyclingRecipe(SimpleStack stack, NonNullList<SimpleStack> stacksOut) {
+        this(stack);
         this.itemsList.addAll(stacksOut);
     }
 
-    RecyclingRecipe(ItemStack stackIn, ItemStack[] stacksOut) {
+    RecyclingRecipe(SimpleStack stackIn, SimpleStack[] stacksOut) {
         this.itemRecipe = stackIn;
         Collections.addAll(itemsList, stacksOut);
     }
 
-    public ItemStack getItemRecipe() {
+    public SimpleStack getItemRecipe() {
         return this.itemRecipe;
     }
 
@@ -58,15 +57,15 @@ public class RecyclingRecipe {
         return this.itemsList.size();
     }
 
-    void addStack(ItemStack stack) {
+    void addStack(SimpleStack stack) {
         this.itemsList.add(stack);
     }
 
-    public ItemStack getResult(int index) {
+    public SimpleStack getResult(int index) {
         return this.itemsList.get(index);
     }
 
-    public NonNullList<ItemStack> getResult() {
+    public NonNullList<SimpleStack> getResult() {
         return this.itemsList;
     }
 }
