@@ -15,7 +15,7 @@ import ovh.corail.recycler.util.RecyclingRecipe;
 public class ContainerRecyclingBook extends Container {
     private final IntReferenceHolder pageNum = IntReferenceHolder.single(), pageMax = IntReferenceHolder.single();
     private final ItemStackHandler BOOK_INVENTORY = new ItemStackHandler(40);
-    private String searchText = "";
+    private String searchText = ""; // the search is server side so in english only
 
     protected ContainerRecyclingBook(ContainerType<? extends ContainerRecyclingBook> containerType, int windowId) {
         super(containerType, windowId);

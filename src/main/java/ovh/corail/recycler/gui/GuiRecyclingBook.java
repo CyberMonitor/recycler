@@ -36,7 +36,6 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
     public void init() {
         super.init();
         getMinecraft().keyboardListener.enableRepeatEvents(true);
-        this.buttons.clear();
         addButton(new ButtonRecyclingBook(false, this.guiLeft + 20, this.guiTop + 135, pressable -> {
             if (this.container.getPageNum() > 0) {
                 PacketHandler.sendToServer(new ServerRecyclingBookMessage(RecyclingBookAction.CHANGE_PAGE, this.container.getPageNum() - 1));
