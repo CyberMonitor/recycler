@@ -1,6 +1,7 @@
 package ovh.corail.recycler.network;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -42,6 +43,7 @@ public class ServerRecyclerMessage {
                 ServerPlayerEntity player = ctx.get().getSender();
                 if (player != null) {
                     TileEntityRecycler recycler = BlockRecycler.getTileEntity(player.world, message.pos);
+                    ItemStack stack;
                     if (recycler != null) {
                         switch (message.action) {
                             case RECYCLE:
@@ -59,19 +61,22 @@ public class ServerRecyclerMessage {
                                 });
                                 break;
                             case DISCOVER_RECIPE:
-                                try {
-                                    RecyclingManager.instance.discoverRecipe(player, recycler.getInventoryWorking().getStackInSlot(0));
+                                stack = recycler.getInventoryWorking().getStackInSlot(0);
+                                if (!stack.isEmpty() && RecyclingManager.instance.discoverRecipe(player.getServerWorld(), stack)) {
                                     recycler.updateRecyclingRecipe();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+                                    LangKey.MESSAGE_ADD_RECIPE_SUCCESS.sendMessage(player);
+                                } else {
+                                    LangKey.MESSAGE_ADD_RECIPE_FAILED.sendMessage(player);
                                 }
                                 break;
                             case REMOVE_RECIPE:
-                                boolean success = RecyclingManager.instance.removeRecipe(recycler.getInventoryWorking().getStackInSlot(0));
-                                if (success) {
+                                stack = recycler.getInventoryWorking().getStackInSlot(0);
+                                if (!stack.isEmpty() && RecyclingManager.instance.removeRecipe(stack)) {
                                     recycler.updateRecyclingRecipe();
+                                    LangKey.MESSAGE_REMOVE_RECIPE_SUCCESS.sendMessage(player);
+                                } else {
+                                    LangKey.MESSAGE_REMOVE_RECIPE_FAILED.sendMessage(player);
                                 }
-                                (success ? LangKey.MESSAGE_REMOVE_RECIPE_SUCCESS : LangKey.MESSAGE_REMOVE_RECIPE_FAILED).sendMessage(player);
                                 break;
                         }
                     }

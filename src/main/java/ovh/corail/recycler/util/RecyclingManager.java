@@ -11,7 +11,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -20,6 +19,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import ovh.corail.recycler.ConfigRecycler;
@@ -64,39 +64,27 @@ public class RecyclingManager {
         }
     }
 
-    public void discoverRecipe(ServerPlayerEntity player, ItemStack stack) {
-        int hasRecipe = getRecipeIndex(stack);
+    public boolean discoverRecipe(ServerWorld world, ItemStack stack) {
+        int recipeId = getRecipeIndex(stack);
         // Recipe already in recycler
-        if (hasRecipe >= 0) {
+        if (recipeId >= 0) {
             // isn't blacklist
-            if (getRecipe(hasRecipe).isAllowed()) {
-                LangKey.MESSAGE_ADD_RECIPE_FAILED.sendMessage(player);
-            } else {
-                getRecipe(hasRecipe).setAllowed(true);
-                saveBlacklist();
-                LangKey.MESSAGE_ADD_RECIPE_SUCCESS.sendMessage(player);
+            RecyclingRecipe recipe = getRecipe(recipeId);
+            if (recipe.isAllowed()) {
+                return false;
             }
+            recipe.setAllowed(true);
+            saveBlacklist();
+            return true;
         } else {
             // new recipe added
-            boolean valid = false;
-            RecyclingRecipe recipe = null;
-            for (IRecipe crafting_recipe : player.world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values()) {
-                ItemStack o = crafting_recipe.getRecipeOutput();
-                if (Helper.areItemEqual(o, stack)) {
-                    recipe = convertCraftingRecipe(crafting_recipe);
-                    if (recipe.getCount() > 0 && !recipe.getItemRecipe().isEmpty()) {
-                        valid = true;
-                        break;
-                    }
-                }
-            }
+            RecyclingRecipe recipe = world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(craftingRecipe -> Helper.areItemEqual(craftingRecipe.getRecipeOutput(), stack)).map(this::convertCraftingRecipe).findFirst().orElse(null);
             // add recipe and save user defined recipes to json
-            if (valid) {
+            if (recipe != null && recipe.getCount() > 0 && !recipe.getItemRecipe().isEmpty()) {
                 addRecipe(recipe);
-                (saveUserDefinedRecipes() ? LangKey.MESSAGE_ADD_RECIPE_SUCCESS : LangKey.MESSAGE_ADD_RECIPE_FAILED).sendMessage(player);
-            } else {
-                LangKey.MESSAGE_ADD_RECIPE_FAILED.sendMessage(player);
+                return saveUserDefinedRecipes();
             }
+            return false;
         }
     }
 
@@ -351,12 +339,7 @@ public class RecyclingManager {
 
     private SimpleStack getGrind(SimpleStack stack) {
         // only call when stack is damaged or there's losses to get smaller units
-        for (ImmutablePair<SimpleStack, SimpleStack> grind : grindList) {
-            if (SimpleStack.areItemEqual(grind.getLeft(), stack)) {
-                return grind.getRight();
-            }
-        }
-        return SimpleStack.EMPTY;
+        return this.grindList.stream().filter(grind -> SimpleStack.areItemEqual(grind.getLeft(), stack)).map(ImmutablePair::getRight).findFirst().orElse(SimpleStack.EMPTY);
     }
 
     private boolean saveUserDefinedRecipes() {
