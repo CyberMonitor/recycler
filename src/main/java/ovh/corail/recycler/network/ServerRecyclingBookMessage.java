@@ -71,7 +71,7 @@ public class ServerRecyclingBookMessage {
 
                                 @Override
                                 public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) {
-                                    return new ContainerRecyclingBook(windowId);
+                                    return new ContainerRecyclingBook(windowId, playerInventory);
                                 }
                             });
                             break;

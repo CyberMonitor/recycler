@@ -17,20 +17,18 @@ public class ContainerRecyclingBook extends Container {
     private final ItemStackHandler BOOK_INVENTORY = new ItemStackHandler(40);
     private String searchText = ""; // the search is server side so in english only
 
-    protected ContainerRecyclingBook(ContainerType<? extends ContainerRecyclingBook> containerType, int windowId) {
+    protected ContainerRecyclingBook(ContainerType<? extends ContainerRecyclingBook> containerType, int windowId, PlayerInventory playerInventory) {
         super(containerType, windowId);
         trackInt(this.pageNum);
         trackInt(this.pageMax);
         initSlots();
-        initPage(0);
-    }
-
-    public ContainerRecyclingBook(int windowId) {
-        this(ModContainers.RECYCLING_BOOK, windowId);
+        if (!playerInventory.player.world.isRemote) {
+            initPage(0);
+        }
     }
 
     public ContainerRecyclingBook(int windowId, PlayerInventory playerInventory) {
-        this(ModContainers.RECYCLING_BOOK, windowId);
+        this(ModContainers.RECYCLING_BOOK, windowId, playerInventory);
     }
 
     public void initPage(int pageNum) {

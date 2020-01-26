@@ -5,12 +5,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class SimpleStack {
     public static final SimpleStack EMPTY = new SimpleStack(ItemStack.EMPTY);
     private final Item item;
     private final int count;
+    private String translation = null;
 
     public SimpleStack(ItemStack stack) {
         this(stack.getItem(), stack.getCount());
@@ -47,6 +49,13 @@ public class SimpleStack {
 
     public ItemStack asItemStack() {
         return new ItemStack(this.item, this.count);
+    }
+
+    public String getTranslation() {
+        if (this.translation == null) {
+            this.translation = new TranslationTextComponent(this.item.getTranslationKey()).getFormattedText().toLowerCase();
+        }
+        return this.translation;
     }
 
     @Override
