@@ -15,7 +15,7 @@
 	"parent": "corail_recycler:tutorial/build_recycler",
     "criteria": {
       "coded_trigger": {
-        "trigger": "minecraft:impossible"
+        "trigger": "corail_recycler:read_recycling_book"
       }
     },
 	"requirements": [

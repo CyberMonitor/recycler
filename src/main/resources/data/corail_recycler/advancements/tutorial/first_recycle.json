@@ -15,7 +15,7 @@
 	"parent": "corail_recycler:tutorial/build_disk",
     "criteria": {
       "coded_trigger": {
-        "trigger": "minecraft:impossible"
+        "trigger": "corail_recycler:first_recycle"
       }
     },
 	"requirements": [
