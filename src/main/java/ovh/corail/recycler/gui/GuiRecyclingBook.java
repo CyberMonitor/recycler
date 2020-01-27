@@ -25,6 +25,7 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
     private String lastText = "";
     private static final ResourceLocation TEXTURE_VANILLA_RECYCLER = new ResourceLocation(MOD_ID + ":textures/gui/vanilla_recycler.png");
     private static final ResourceLocation TEXTURE_RECYCLING_BOOK = new ResourceLocation(MOD_ID + ":textures/gui/book.png");
+    private final int textColor = 0xd4af37;
 
     public GuiRecyclingBook(ContainerRecyclingBook container, PlayerInventory playerInventory, ITextComponent title) {
         super(container, playerInventory, title);
@@ -144,6 +145,7 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
         for (Slot slot : this.container.inventorySlots) {
             blit(this.guiLeft + slot.xPos, this.guiTop + slot.yPos, 112, 222, 16, 16);
         }
+        // TODO icons for blacklist recipe / unbalanced / user defined + allow to show blacklist ones with permission level
     }
 
     @Override
@@ -151,12 +153,12 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
         GlStateManager.pushMatrix();
         GlStateManager.scaled(0.5d, 0.5d, 0.5d);
         // name of the recipe
-        this.container.inventorySlots.stream().filter(p -> p.getSlotIndex() % 10 == 0 && !p.getStack().isEmpty()).forEach(c -> drawString(this.font, c.getStack().getDisplayName().getUnformattedComponentText(), (c.xPos - 2) * 2, (c.yPos - 22) * 2, 13938487));
+        this.container.inventorySlots.stream().filter(p -> p.getSlotIndex() % 10 == 0 && !p.getStack().isEmpty()).forEach(c -> drawString(this.font, c.getStack().getDisplayName().getUnformattedComponentText(), (c.xPos - 2) * 2, (c.yPos - 22) * 2, this.textColor));
         // page number
-        this.font.drawStringWithShadow((this.container.getPageNum() + 1) + "/" + (this.container.getPageMax() + 1), 428, 240, 13938487);
+        this.font.drawStringWithShadow((this.container.getPageNum() + 1) + "/" + (this.container.getPageMax() + 1), 428, 240, this.textColor);
         GlStateManager.popMatrix();
         // title of the book
         String title = TextFormatting.BOLD + I18n.format(LangKey.MESSAGE_RECYCLING_BOOK.getKey());
-        this.font.drawStringWithShadow(title, (this.xSize - this.font.getStringWidth(title)) / 2f, -10, 13938487);
+        this.font.drawStringWithShadow(title, (this.xSize - this.font.getStringWidth(title)) / 2f, -10, this.textColor);
     }
 }

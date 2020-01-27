@@ -8,6 +8,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import javax.annotation.Nullable;
+
 public class SimpleStack {
     public static final SimpleStack EMPTY = new SimpleStack(ItemStack.EMPTY);
     private final Item item;
@@ -18,9 +20,14 @@ public class SimpleStack {
         this(stack.getItem(), stack.getCount());
     }
 
-    public SimpleStack(Item item, int count) {
-        this.item = item;
-        this.count = count;
+    public SimpleStack(@Nullable Item item, int count) {
+        if (item != null) {
+            this.item = item;
+            this.count = count;
+        } else {
+            this.item = Items.AIR;
+            this.count = 1;
+        }
     }
 
     public SimpleStack(Item item) {
@@ -44,7 +51,7 @@ public class SimpleStack {
     }
 
     public boolean isEmpty() {
-        return this.item == Items.AIR;
+        return this.item == null || this.item == Items.AIR;
     }
 
     public ItemStack asItemStack() {

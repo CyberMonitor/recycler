@@ -68,7 +68,7 @@ public class CommandRecycler {
         RecyclingManager rm = RecyclingManager.instance;
         NonNullList<JsonRecyclingRecipe> list = NonNullList.create();
         // only recipes not in the recycler
-        source.getWorld().getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(recipe -> recipe != null && !recipe.getRecipeOutput().isEmpty() && rm.hasRecipe(recipe.getRecipeOutput()) == -1).forEach(recipe -> {
+        source.getWorld().getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(recipe -> recipe != null && !recipe.getRecipeOutput().isEmpty() && rm.getRecipe(recipe.getRecipeOutput(), false) == null).forEach(recipe -> {
             JsonRecyclingRecipe res = rm.convertRecipeToJson(rm.convertCraftingRecipe(recipe));
             if (res != null) {
                 list.add(res);

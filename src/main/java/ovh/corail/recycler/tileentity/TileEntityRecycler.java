@@ -257,28 +257,35 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
         // autofill the working slots
         if (this.world.getGameTime() % 10 == 0) {
             ItemStack stackToRecycle = this.inventWorking.getStackInSlot(0);
+            boolean requireRecipeUpdate = false;
             if (stackToRecycle.isEmpty()) {
                 // transfer the fullstack if the working slot is empty
-                IntStream.range(0, this.inventInput.getSlots()).filter(slot -> {
+                int slotId = IntStream.range(0, this.inventInput.getSlots()).filter(slot -> {
                     ItemStack stackInSlot = this.inventInput.getStackInSlot(slot);
                     return !stackInSlot.isEmpty() && this.inventWorking.isItemValid(0, stackInSlot);
-                }).findFirst().ifPresent(slot -> {
-                    this.inventWorking.insertItem(0, this.inventInput.extractItem(slot, this.inventInput.getStackInSlot(slot).getCount(), false), false);
-                    updateRecyclingRecipe();
-                });
+                }).findFirst().orElse(-1);
+                if (slotId > 0) {
+                    this.inventWorking.insertItem(0, this.inventInput.extractItem(slotId, this.inventInput.getStackInSlot(slotId).getCount(), false), false);
+                    requireRecipeUpdate = true;
+                }
             } else if (stackToRecycle.isStackable() && stackToRecycle.getCount() < stackToRecycle.getMaxStackSize()) {
                 // transfer slowly to fill the working slot
-                IntStream.range(0, this.inventInput.getSlots()).filter(slot -> Helper.areItemEqual(stackToRecycle, this.inventInput.getStackInSlot(slot))).findFirst().ifPresent(slot -> {
-                    this.inventWorking.insertItem(0, this.inventInput.extractItem(slot, 1, false), false);
-                    updateRecyclingRecipe();
-                });
+                int slotId = IntStream.range(0, this.inventInput.getSlots()).filter(slot -> Helper.areItemEqual(stackToRecycle, this.inventInput.getStackInSlot(slot))).findFirst().orElse(-1);
+                if (slotId > 0) {
+                    this.inventWorking.insertItem(0, this.inventInput.extractItem(slotId, 1, false), false);
+                    requireRecipeUpdate = true;
+                }
             }
             if (this.inventWorking.getStackInSlot(1).isEmpty()) {
                 // replace disk if needed
-                IntStream.range(0, this.inventInput.getSlots()).filter(slotId -> this.inventWorking.isItemValid(1, this.inventInput.getStackInSlot(slotId))).findFirst().ifPresent(slotId -> {
+                int slotId = IntStream.range(0, this.inventInput.getSlots()).filter(slot -> this.inventWorking.isItemValid(1, this.inventInput.getStackInSlot(slot))).findFirst().orElse(-1);
+                if (slotId > 0) {
                     this.inventWorking.insertItem(1, this.inventInput.extractItem(slotId, 1, false), false);
-                    updateRecyclingRecipe();
-                });
+                    requireRecipeUpdate = true;
+                }
+            }
+            if (requireRecipeUpdate) {
+                updateRecyclingRecipe();
             }
         }
         // TODO cache last recipe

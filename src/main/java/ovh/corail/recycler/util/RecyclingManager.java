@@ -65,11 +65,10 @@ public class RecyclingManager {
     }
 
     public boolean discoverRecipe(ServerWorld world, ItemStack stack) {
-        int recipeId = getRecipeIndex(stack);
+        RecyclingRecipe recipe = getRecipe(stack, false);
         // Recipe already in recycler
-        if (recipeId >= 0) {
+        if (recipe != null) {
             // isn't blacklist
-            RecyclingRecipe recipe = getRecipe(recipeId);
             if (recipe.isAllowed()) {
                 return false;
             }
@@ -78,7 +77,7 @@ public class RecyclingManager {
             return true;
         } else {
             // new recipe added
-            RecyclingRecipe recipe = world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(craftingRecipe -> Helper.areItemEqual(craftingRecipe.getRecipeOutput(), stack)).map(this::convertCraftingRecipe).findFirst().orElse(null);
+            recipe = world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(craftingRecipe -> Helper.areItemEqual(craftingRecipe.getRecipeOutput(), stack)).map(this::convertCraftingRecipe).findFirst().orElse(null);
             // add recipe and save user defined recipes to json
             if (recipe != null && recipe.getCount() > 0 && !recipe.getItemRecipe().isEmpty()) {
                 addRecipe(recipe);
@@ -170,20 +169,17 @@ public class RecyclingManager {
     }
 
     public boolean removeRecipe(ItemStack stack) {
-        if (stack.isEmpty()) {
+        RecyclingRecipe recipe = getRecipe(stack, false);
+        if (recipe == null) {
             return false;
         }
-        int index = getRecipeIndex(stack);
-        if (index < 0) {
-            return false;
-        }
-        if (this.recipes.get(index).isUserDefined()) {
-            this.recipes.remove(index);
+        if (recipe.isUserDefined()) {
+            this.recipes.remove(recipe);
             saveUserDefinedRecipes();
-        } else {
-            this.recipes.get(index).setAllowed(false);
-            saveBlacklist();
+            return true;
         }
+        recipe.setAllowed(false);
+        saveBlacklist();
         return true;
     }
 
@@ -193,37 +189,34 @@ public class RecyclingManager {
 
     @Nullable
     public RecyclingRecipe getRecipe(ItemStack stack) {
-        int recipeId = hasRecipe(stack);
-        return recipeId >= 0 ? this.recipes.get(recipeId) : null;
+        return getRecipe(stack, true);
     }
 
-    public int hasRecipe(ItemStack stack) {
+    @Nullable
+    public RecyclingRecipe getRecipe(ItemStack stack, boolean checked) {
         // enchanted book requires 2 enchants to be recycled
-        if (stack.isEmpty() || (stack.getItem() == Items.ENCHANTED_BOOK && EnchantedBookItem.getEnchantments(stack).size() < 2)) {
-            return -1;
+        if (stack.isEmpty() || (checked && stack.getItem() == Items.ENCHANTED_BOOK && EnchantedBookItem.getEnchantments(stack).size() < 2)) {
+            return null;
         }
-        int recipeId = getRecipeIndex(stack);
-        if (recipeId < 0) {
-            return -1;
+        RecyclingRecipe recipe = this.recipes.stream().filter(recipeIn -> recipeIn.getItemRecipe().isItemEqual(stack)).findFirst().orElse(null);
+        if (recipe == null) {
+            return null;
         }
-        RecyclingRecipe recipe = this.recipes.get(recipeId);
-        // unbalanced recipes
-        if (!ConfigRecycler.general.unbalanced_recipes.get() && recipe.isUnbalanced()) {
-            return -1;
+        if (checked) {
+            // unbalanced recipes
+            if (!ConfigRecycler.general.unbalanced_recipes.get() && recipe.isUnbalanced()) {
+                return null;
+            }
+            // only user defined recipes
+            if (ConfigRecycler.general.only_user_recipes.get() && !recipe.isUserDefined()) {
+                return null;
+            }
+            // only allowed recipes
+            if (!recipe.isAllowed()) {
+                return null;
+            }
         }
-        // only user defined recipes
-        if (ConfigRecycler.general.only_user_recipes.get() && !recipe.isUserDefined()) {
-            return -1;
-        }
-        // only allowed recipes
-        if (!recipe.isAllowed()) {
-            return -1;
-        }
-        return recipeId;
-    }
-
-    private int getRecipeIndex(ItemStack stack) {
-        return stack.isEmpty() ? -1 : IntStream.range(0, this.recipes.size()).filter(slotId -> this.recipes.get(slotId).getItemRecipe().isItemEqual(stack)).findFirst().orElse(-1);
+        return recipe;
     }
 
     private int getRecipeIndex(SimpleStack stack) {
@@ -237,12 +230,11 @@ public class RecyclingManager {
     // TODO clean this
     public NonNullList<ItemStack> getResultStack(ItemStack stack, int nb_input, boolean half) {
         NonNullList<ItemStack> itemsList = NonNullList.create();
-        int num_recipe = hasRecipe(stack);
-        if (num_recipe < 0) {
+        RecyclingRecipe currentRecipe = getRecipe(stack);
+        if (currentRecipe == null) {
             return itemsList;
         }
 
-        RecyclingRecipe currentRecipe = recipes.get(num_recipe);
         ItemStack currentStack;
         int currentSize;
         boolean isDamagedStack = stack.getMaxDamage() > 0 && stack.getDamage() > 0;
@@ -326,10 +318,9 @@ public class RecyclingManager {
             Type token = new TypeToken<NonNullList<ImmutablePair<String, String>>>() {
             }.getType();
             NonNullList<ImmutablePair<String, String>> jsonStringList = (NonNullList<ImmutablePair<String, String>>) loadAsJson(this.grindFile, token);
-            ItemStack input, output;
             for (ImmutablePair<String, String> pair : jsonStringList) {
-                input = SimpleStack.fromJson(pair.getLeft()).asItemStack();
-                output = SimpleStack.fromJson(pair.getRight()).asItemStack();
+                SimpleStack input = SimpleStack.fromJson(pair.getLeft());
+                SimpleStack output = SimpleStack.fromJson(pair.getRight());
                 if (!input.isEmpty() && !output.isEmpty()) {
                     this.grindList.add(new ImmutablePair(input, output));
                 }

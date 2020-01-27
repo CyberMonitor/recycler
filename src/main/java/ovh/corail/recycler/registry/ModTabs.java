@@ -5,8 +5,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nonnull;
-
 import static ovh.corail.recycler.ModRecycler.MOD_ID;
 import static ovh.corail.recycler.ModRecycler.MOD_NAME;
 
@@ -20,7 +18,6 @@ public class ModTabs {
 
         @Override
         @OnlyIn(Dist.CLIENT)
-        @Nonnull
         public String getTranslationKey() {
             return MOD_NAME;
         }

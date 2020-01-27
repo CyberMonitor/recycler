@@ -16,7 +16,7 @@ public class RecyclingRecipe {
     }
 
     RecyclingRecipe(SimpleStack stack, NonNullList<SimpleStack> stacksOut) {
-        this(stack);
+        this.itemRecipe = stack;
         this.itemsList.addAll(stacksOut);
     }
 
