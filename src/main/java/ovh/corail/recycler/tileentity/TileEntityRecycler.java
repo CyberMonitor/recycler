@@ -264,14 +264,14 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
                     ItemStack stackInSlot = this.inventInput.getStackInSlot(slot);
                     return !stackInSlot.isEmpty() && this.inventWorking.isItemValid(0, stackInSlot);
                 }).findFirst().orElse(-1);
-                if (slotId > 0) {
+                if (slotId >= 0) {
                     this.inventWorking.insertItem(0, this.inventInput.extractItem(slotId, this.inventInput.getStackInSlot(slotId).getCount(), false), false);
                     requireRecipeUpdate = true;
                 }
             } else if (stackToRecycle.isStackable() && stackToRecycle.getCount() < stackToRecycle.getMaxStackSize()) {
                 // transfer slowly to fill the working slot
                 int slotId = IntStream.range(0, this.inventInput.getSlots()).filter(slot -> Helper.areItemEqual(stackToRecycle, this.inventInput.getStackInSlot(slot))).findFirst().orElse(-1);
-                if (slotId > 0) {
+                if (slotId >= 0) {
                     this.inventWorking.insertItem(0, this.inventInput.extractItem(slotId, 1, false), false);
                     requireRecipeUpdate = true;
                 }
@@ -279,7 +279,7 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
             if (this.inventWorking.getStackInSlot(1).isEmpty()) {
                 // replace disk if needed
                 int slotId = IntStream.range(0, this.inventInput.getSlots()).filter(slot -> this.inventWorking.isItemValid(1, this.inventInput.getStackInSlot(slot))).findFirst().orElse(-1);
-                if (slotId > 0) {
+                if (slotId >= 0) {
                     this.inventWorking.insertItem(1, this.inventInput.extractItem(slotId, 1, false), false);
                     requireRecipeUpdate = true;
                 }
