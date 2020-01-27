@@ -31,7 +31,7 @@ public class GuiRecycler extends ContainerScreen<ContainerRecycler> {
 
     public GuiRecycler(ContainerRecycler container, PlayerInventory playerInventory, ITextComponent title) {
         super(container, playerInventory, title);
-        this.xSize = 248;
+        this.xSize = 232;
         this.ySize = 203;
     }
 
