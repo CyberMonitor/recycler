@@ -5,11 +5,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Helper {
     public final static Random random = new Random();
@@ -55,6 +59,52 @@ public class Helper {
         }
         list.removeIf(ItemStack::isEmpty);
         return list;
+    }
+
+    public static boolean canInsertInInventory(IItemHandlerModifiable inventory, NonNullList<ItemStack> items) {
+        // list of stacksize of the inventory
+        List<Integer> slotSizes = IntStream.range(0, inventory.getSlots()).map(slotId -> {
+            ItemStack stack = inventory.getStackInSlot(slotId);
+            return stack.isEmpty() ? 0 : stack.getCount();
+        }).boxed().collect(Collectors.toList());
+        int emptySlots = (int) slotSizes.stream().filter(i -> i == 0).count();
+        // simulate : enough empty slots
+        if (emptySlots >= items.size()) {
+            return true;
+        }
+        // simulate : try to fill at least minCount stacks depending of empty slots
+        int minCount = items.size() - emptySlots;
+        // each itemstack to insert in the inventory
+        for (ItemStack stackIn : items) {
+            if (minCount <= 0) {
+                return true;
+            }
+            // skip empty itemstack
+            if (stackIn.isEmpty() || !stackIn.isStackable()) {
+                minCount--;
+                continue;
+            }
+            int left = stackIn.getCount();
+            // try to fill same itemstacks in inventory
+            for (int slotId = 0; slotId < inventory.getSlots(); slotId++) {
+                ItemStack currentStack = inventory.getStackInSlot(slotId);
+                // look for similar item not full stacksize
+                int stacksize;
+                if (Helper.areItemEqual(stackIn, currentStack) && (stacksize = slotSizes.get(slotId)) < currentStack.getMaxStackSize()) {
+                    int add = Math.min(left, currentStack.getMaxStackSize() - stacksize);
+                    if (add > 0) {
+                        slotSizes.set(slotId, stacksize + add);
+                        left -= add;
+                        // stack completely filled
+                        if (left <= 0) {
+                            minCount--;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return minCount <= 0;
     }
 
     @SuppressWarnings("all")

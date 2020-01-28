@@ -35,8 +35,6 @@ import ovh.corail.recycler.util.RecyclingManager;
 import ovh.corail.recycler.util.RecyclingRecipe;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static ovh.corail.recycler.ModRecycler.MOD_ID;
@@ -80,100 +78,8 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
         ItemHandlerHelper.insertItemStacked(inventOutput, inventWorking.extractItem(0, inventWorking.getStackInSlot(0).getCount(), false), false);
     }
 
-    private boolean hasSpaceInInventory(NonNullList<ItemStack> itemsList, boolean simulate) {
-        // TODO clean this method
-        // list of empty slots
-        List<Integer> emptySlots = IntStream.range(0, this.inventOutput.getSlots()).filter(slot -> this.inventOutput.getStackInSlot(slot).isEmpty()).boxed().collect(Collectors.toList());
-        // simulate : enough empty slots
-        if (simulate && emptySlots.size() >= itemsList.size()) {
-            return true;
-        }
-        // simulate : try to fill at least minCount stacks depending of empty slots
-        int minCount = simulate ? itemsList.size() - emptySlots.size() : 0;
-        int space, maxSize, add, left, emptySlot;
-        ItemStack stackCopy;
-        // each stack of the input List
-        ItemStack stackIn, stackOut;
-        for (int i = 0; i < itemsList.size(); i++) {
-            stackIn = itemsList.get(i);
-            // input stack empty or max stacksize
-            if (stackIn.isEmpty()) {
-                if (simulate) {
-                    minCount--;
-                }
-                continue;
-            }
-            if (stackIn.getCount() == stackIn.getMaxStackSize()) {
-                continue;
-            }
-            // try to fill same stacks not full
-            left = stackIn.getCount();
-            maxSize = stackIn.getMaxStackSize();
-            // each stack of the output List
-            for (int slot = 0; slot < this.inventOutput.getSlots(); slot++) {
-                stackOut = this.inventOutput.getStackInSlot(slot);
-                // output stack empty or max stacksize
-                if (stackOut.isEmpty() || stackOut.getCount() == stackOut.getMaxStackSize()) {
-                    continue;
-                }
-                // stacks equal and same meta/nbt
-                if (Helper.areItemEqual(stackIn, stackOut)) {
-                    space = maxSize - stackOut.getCount();
-                    add = Math.min(space, left);
-                    if (add > 0) {
-                        stackOut.grow(add);
-                        left -= add;
-                        if (left <= 0) {
-                            break;
-                        }
-                    }
-                }
-            }
-            // stack completely filled
-            if (left <= 0 && simulate) {
-                minCount--;
-            }
-            // place the stack left in an empty stack
-            if (left > 0) {
-                if (emptySlots.size() > 0) {
-                    emptySlot = emptySlots.get(0);
-                    emptySlots.remove(0);
-                    stackCopy = stackIn.copy();
-                    stackCopy.setCount(left);
-                    this.inventOutput.setStackInSlot(emptySlot, stackCopy);
-                    if (simulate) {
-                        minCount++;
-                    }
-                    // no empty stack
-                } else {
-                    return false;
-                }
-            }
-            if (simulate && minCount <= 0) {
-                return true;
-            }
-            itemsList.set(i, ItemStack.EMPTY);
-        }
-        // add the fullstack left in input
-        for (ItemStack stack : itemsList) {
-            if (!stack.isEmpty() && emptySlots.size() > 0) {
-                emptySlot = emptySlots.get(0);
-                emptySlots.remove(0);
-                this.inventOutput.setStackInSlot(emptySlot, stack.copy());
-            }
-        }
-        // overwrite the output slots
-        if (!simulate) {
-            IntStream.range(0, this.inventOutput.getSlots()).forEach(slot -> {
-                this.inventOutput.setStackInSlot(slot, this.inventOutput.getStackInSlot(slot));
-            });
-        }
-        return true;
-    }
-
     public boolean recycle(@Nullable ServerPlayerEntity player) {
         assert this.world != null;
-        //TODO clean this method
         RecyclingManager recyclingManager = RecyclingManager.instance;
         final ItemStack workingStack = inventWorking.getStackInSlot(0);
         final ItemStack diskStack = inventWorking.getStackInSlot(1);
@@ -188,13 +94,13 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
             return false;
         }
         // number of times that the recipe can be used with this stack
-        int nb_input = workingStack.getCount() / recipe.getItemRecipe().getCount();
+        int nb_input = workingStack.getCount() / Math.max(recipe.getItemRecipe().getCount(), 1);
         // not enough stacksize for at least one recipe
         if (nb_input == 0) {
             return false;
         }
         // by unit in auto recycle
-        if (isWorking) {
+        if (this.isWorking) {
             nb_input = 1;
         }
         // max uses of the disk
@@ -202,14 +108,7 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
         if (maxDiskUse < nb_input) {
             nb_input = maxDiskUse;
         }
-        // calculation of the result
-        NonNullList<ItemStack> itemsList = recyclingManager.getResultStack(workingStack, nb_input);
-        // simule the space needed
-        if (!hasSpaceInInventory(itemsList, true)) {
-            LangKey.MESSAGE_NOT_ENOUGH_OUTPUT_SLOTS.sendMessage(player);
-            return false;
-        }
-        // Loss chance
+        // loss chance
         int loss = 0;
         if (ConfigRecycler.general.chance_loss.get() > 0) {
             // TODO use probabilities
@@ -222,18 +121,23 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
                 LangKey.MESSAGE_LOSS.sendMessage(player);
             }
         }
-        NonNullList<ItemStack> stackList;
-        if (nb_input - loss > 0) {
-            stackList = recyclingManager.getResultStack(workingStack, nb_input - loss);
-        } else {
-            stackList = NonNullList.create();
+        // calculation of the result
+        final NonNullList<ItemStack> result = NonNullList.create();
+        int noLossCount = nb_input - loss;
+        if (noLossCount > 0) {
+            result.addAll(recyclingManager.getResultStack(workingStack, noLossCount));
         }
         if (loss > 0) {
-            NonNullList<ItemStack> halfstackList = recyclingManager.getResultStack(workingStack, loss, true);
-            stackList.addAll(halfstackList);
+            result.addAll(recyclingManager.getResultStack(workingStack, loss, true));
+        }
+        Helper.mergeStackInList(result);
+        // simule the space needed
+        if (!Helper.canInsertInInventory(this.inventOutput, result)) {
+            LangKey.MESSAGE_NOT_ENOUGH_OUTPUT_SLOTS.sendMessage(player);
+            return false;
         }
         // transfer stacks
-        hasSpaceInInventory(stackList, false);
+        result.forEach(stack -> ItemHandlerHelper.insertItemStacked(this.inventOutput, stack, false));
         // consume the working slot
         this.inventWorking.getStackInSlot(0).shrink(nb_input * recipe.getItemRecipe().getCount());
         // damage the disk
