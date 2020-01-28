@@ -106,7 +106,7 @@ public class GuiRecycler extends ContainerScreen<ContainerRecycler> {
         GlStateManager.color4f(1f, 1f, 1f, 1f);
         getMinecraft().getTextureManager().bindTexture(TEXTURE_BAR);
         blit(70, 112, 0f, 20f, 136, 3, 136, 256);
-        blit(70, 112, 0f, 25f, (int) (136 * 0.71d * currentPower) / 10000, 2, 136, 256);
+        blit(70, 112, 0f, 25f, (int) (136 * 0.71d * currentPower) / this.container.getRecycler().getMaxEnergy(), 2, 136, 256);
         blit(70, 112, 0f, 81f, 136, 3, 136, 256);
 
         GlStateManager.pushMatrix();
@@ -149,7 +149,7 @@ public class GuiRecycler extends ContainerScreen<ContainerRecycler> {
         // button recycle
         this.buttons.get(0).active = hasRecipe && this.container.getInputMax() > 0 && !this.container.isWorking();
         // button auto
-        this.buttons.get(1).active = hasRecipe;
+        this.buttons.get(1).active = hasRecipe && !this.container.getRecycler().getInventoryWorking().getStackInSlot(1).isEmpty();
         // button take all
         this.buttons.get(2).active = !this.container.getRecycler().isOutputEmpty();
         // button create recipe
