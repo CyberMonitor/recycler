@@ -34,29 +34,27 @@ public class Helper {
         return !s1.isEmpty() && s1.getItem() == s2.getItem();
     }
 
-    public static NonNullList<ItemStack> mergeStackInList(NonNullList<ItemStack> itemStackList) {
-        NonNullList<ItemStack> outputList = NonNullList.create();
-        for (ItemStack stack : itemStackList) {
-            ItemStack currentStack = stack.copy();
-            // looking for existing same stack
-            for (ItemStack lookStack : outputList) {
-                if (currentStack.isEmpty() || !currentStack.isStackable()) {
-                    break;
+    public static NonNullList<ItemStack> mergeStackInList(NonNullList<ItemStack> list) {
+        for (int i = 0 ; i < list.size() ; i++) {
+            ItemStack currentStack = list.get(i);
+            if (!currentStack.isEmpty() && currentStack.isStackable() && currentStack.getCount() < currentStack.getMaxStackSize()) {
+                for (int j = i + 1; j < list.size(); j++) {
+                    ItemStack lookStack = list.get(j);
+                    if (!lookStack.isEmpty() && areItemEqual(currentStack, lookStack)) {
+                        int add = Math.min(lookStack.getCount(), currentStack.getMaxStackSize() - currentStack.getCount());
+                        if (add > 0) {
+                            lookStack.shrink(add);
+                            currentStack.grow(add);
+                            if (currentStack.getCount() == currentStack.getMaxStackSize()) {
+                                break;
+                            }
+                        }
+                    }
                 }
-                if (!areItemEqual(currentStack, lookStack) || lookStack.isEmpty() || lookStack.getCount() == lookStack.getMaxStackSize()) {
-                    continue;
-                }
-                int add = Math.min(currentStack.getCount(), lookStack.getMaxStackSize() - lookStack.getCount());
-                if (add > 0) {
-                    currentStack.shrink(add);
-                    lookStack.grow(add);
-                }
-            }
-            if (!currentStack.isEmpty()) {
-                outputList.add(currentStack);
             }
         }
-        return outputList;
+        list.removeIf(ItemStack::isEmpty);
+        return list;
     }
 
     @SuppressWarnings("all")

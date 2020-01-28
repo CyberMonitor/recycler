@@ -15,6 +15,7 @@ import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.Ingredient;
@@ -421,8 +422,12 @@ public class RecyclingManager {
 
     @Nullable
     public JsonRecyclingRecipe convertRecipeToJson(RecyclingRecipe recipe) {
-        String inputItem = recipe.getItemRecipe().toString();
-        return inputItem.isEmpty() ? null : new JsonRecyclingRecipe(inputItem, IntStream.range(0, recipe.getCount()).mapToObj(i -> recipe.getResult(i).toString()).toArray(String[]::new));
+        return recipe.getItemRecipe().isEmpty() ? null : new JsonRecyclingRecipe(recipe);
+    }
+
+    @Nullable
+    public JsonRecyclingRecipe convertRecipeToJson(ICraftingRecipe recipe) {
+        return recipe.getRecipeOutput().isEmpty() ? null : new JsonRecyclingRecipe(recipe);
     }
 
     private void addToCollection(Collection<SimpleStack> list, @Nullable Block block) {

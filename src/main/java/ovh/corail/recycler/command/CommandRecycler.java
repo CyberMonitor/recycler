@@ -8,6 +8,7 @@ import net.minecraft.command.arguments.ItemArgument;
 import net.minecraft.command.arguments.ItemInput;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.StringTextComponent;
@@ -69,7 +70,7 @@ public class CommandRecycler {
         NonNullList<JsonRecyclingRecipe> list = NonNullList.create();
         // only recipes not in the recycler
         source.getWorld().getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(recipe -> recipe != null && !recipe.getRecipeOutput().isEmpty() && rm.getRecipe(recipe.getRecipeOutput(), false) == null).forEach(recipe -> {
-            JsonRecyclingRecipe res = rm.convertRecipeToJson(rm.convertCraftingRecipe(recipe));
+            JsonRecyclingRecipe res = rm.convertRecipeToJson((ICraftingRecipe) recipe);
             if (res != null) {
                 list.add(res);
             }
