@@ -24,6 +24,6 @@ public class JsonRecyclingRecipe {
     }
 
     JsonRecyclingRecipe(ICraftingRecipe recipe) {
-        this(new SimpleStack(recipe.getRecipeOutput()).toString(), Helper.mergeStackInList(recipe.getIngredients().stream().filter(p -> p.getMatchingStacks().length > 0 && !p.getMatchingStacks()[0].isEmpty()).map(m -> m.getMatchingStacks()[0]).collect(Collectors.toCollection(NonNullList::create))).stream().map(p -> new SimpleStack(p).toString()).toArray(String[]::new));
+        this(new SimpleStack(recipe.getRecipeOutput()).toString(), Helper.mergeStackInList(recipe.getIngredients().stream().filter(p -> p.getMatchingStacks().length > 0 && !p.getMatchingStacks()[0].isEmpty()).map(m -> m.getMatchingStacks()[0].copy()).collect(Collectors.toCollection(NonNullList::create))).stream().map(p -> new SimpleStack(p).toString()).toArray(String[]::new));
     }
 }

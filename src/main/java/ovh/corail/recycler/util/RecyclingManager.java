@@ -445,7 +445,7 @@ public class RecyclingManager {
     @SuppressWarnings("unchecked")
     public <T extends IRecipe> RecyclingRecipe convertCraftingRecipe(T iRecipe) {
         NonNullList<Ingredient> ingredients = iRecipe.getIngredients();
-        NonNullList<ItemStack> stacks = Helper.mergeStackInList(ingredients.stream().filter(p -> p.getMatchingStacks().length > 0 && !p.getMatchingStacks()[0].isEmpty()).map(m -> m.getMatchingStacks()[0]).collect(Collectors.toCollection(NonNullList::create)));
+        NonNullList<ItemStack> stacks = Helper.mergeStackInList(ingredients.stream().filter(p -> p.getMatchingStacks().length > 0 && !p.getMatchingStacks()[0].isEmpty()).map(m -> m.getMatchingStacks()[0].copy()).collect(Collectors.toCollection(NonNullList::create)));
         RecyclingRecipe recipe = new RecyclingRecipe(new SimpleStack(iRecipe.getRecipeOutput()), stacks.stream().map(SimpleStack::new).collect(Collectors.toCollection(NonNullList::create)));
         recipe.setUnbalanced(false);
         recipe.setUserDefined(true);
