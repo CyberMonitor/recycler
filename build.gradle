@@ -18,7 +18,7 @@ archivesBaseName = 'corail_recycler'
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
-    mappings channel: 'snapshot', version: '20190824-1.14.3'
+    mappings channel: 'snapshot', version: '20200128-1.15.1'
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
     runs {
         client {
@@ -49,9 +49,9 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.14.4-28.1.116'
-    runtimeOnly fg.deobf("mezz.jei:jei-1.14.4:6.0.0.27")
-    compileOnly fg.deobf("mezz.jei:jei-1.14.4:6.0.0.27:api")
+    minecraft 'net.minecraftforge:forge:1.15.2-31.0.1'
+    runtimeOnly fg.deobf("mezz.jei:jei-1.15.2:6.0.0.2")
+    compileOnly fg.deobf("mezz.jei:jei-1.15.2:6.0.0.2:api")
 }
 
 jar {

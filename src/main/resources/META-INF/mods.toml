@@ -1,5 +1,5 @@
 modLoader="javafml" #mandatory
-loaderVersion="[28,)" #mandatory
+loaderVersion="[30,)" #mandatory
 issueTrackerURL="https://github.com/Corail31/recycler/issues/" #optional
 [[mods]] #mandatory
 modId="corail_recycler" #mandatory
@@ -16,12 +16,12 @@ Recycler is an uncrafting table that allows to recycle most of your items (also 
 [[dependencies.corail_recycler]]
     modId="forge"
     mandatory=true
-    versionRange="[28.1.10,)"
+    versionRange="[30.0.10,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.corail_recycler]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.14.4,1.15)"
+    versionRange="[1.15.1,1.16)"
     ordering="NONE"
     side="BOTH"
