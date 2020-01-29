@@ -1,7 +1,8 @@
-package ovh.corail.recycler.util;
+package ovh.corail.recycler.recipe;
 
 import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.util.NonNullList;
+import ovh.corail.recycler.util.Helper;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ public class JsonRecyclingRecipe {
     final String inputItem;
     final String[] outputItems;
 
+    // TODO merge with recyclingRecipe
     JsonRecyclingRecipe(String inputItem, String[] outputItems) {
         this.inputItem = inputItem;
         this.outputItems = outputItems;

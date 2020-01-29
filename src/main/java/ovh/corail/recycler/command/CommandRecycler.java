@@ -13,9 +13,9 @@ import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.StringTextComponent;
 import ovh.corail.recycler.util.Helper;
-import ovh.corail.recycler.util.JsonRecyclingRecipe;
+import ovh.corail.recycler.recipe.JsonRecyclingRecipe;
 import ovh.corail.recycler.util.LangKey;
-import ovh.corail.recycler.util.RecyclingManager;
+import ovh.corail.recycler.recipe.RecyclingManager;
 
 import java.io.File;
 import java.util.stream.Collectors;
@@ -44,6 +44,7 @@ public class CommandRecycler {
         );
     }
 
+    // TODO rename discover + new command to add custom recipe
     private int processAddRecipe(CommandSource source, ItemInput inputStack) throws CommandSyntaxException {
         ServerPlayerEntity player = source.getEntity() instanceof ServerPlayerEntity ? (ServerPlayerEntity) source.getEntity() : null;
         ItemStack stackToDiscover = inputStack != null ? inputStack.createStack(1, false) : player != null ? player.getHeldItemMainhand() : ItemStack.EMPTY;

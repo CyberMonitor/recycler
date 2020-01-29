@@ -8,6 +8,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import ovh.corail.recycler.recipe.RecyclingRecipe;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

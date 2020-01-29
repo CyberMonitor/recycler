@@ -9,8 +9,8 @@ import net.minecraft.util.IntReferenceHolder;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.ItemStackHandler;
 import ovh.corail.recycler.registry.ModContainers;
-import ovh.corail.recycler.util.RecyclingManager;
-import ovh.corail.recycler.util.RecyclingRecipe;
+import ovh.corail.recycler.recipe.RecyclingManager;
+import ovh.corail.recycler.recipe.RecyclingRecipe;
 
 public class ContainerRecyclingBook extends Container {
     private final IntReferenceHolder pageNum = IntReferenceHolder.single(), pageMax = IntReferenceHolder.single();

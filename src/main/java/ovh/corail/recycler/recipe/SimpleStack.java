@@ -1,4 +1,4 @@
-package ovh.corail.recycler.util;
+package ovh.corail.recycler.recipe;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;

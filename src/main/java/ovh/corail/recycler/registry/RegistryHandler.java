@@ -34,6 +34,7 @@ public class RegistryHandler {
     public static void registerItems(RegistryEvent.Register<Item> event) {
         event.getRegistry().registerAll(
                 withName(new ItemGeneric("diamond_shard"), "diamond_shard"),
+                // TODO new disk + make diamond shard obtainable from recycle + advancement for the steps
                 withName(new ItemDisk("diamond_disk", 5000), "diamond_disk"),
                 withName(new ItemBlockRecycler(ModBlocks.recycler), ModBlocks.recycler.getRegistryName())
         );

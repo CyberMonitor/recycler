@@ -31,8 +31,8 @@ import ovh.corail.recycler.registry.ModSounds;
 import ovh.corail.recycler.registry.ModTileEntityTypes;
 import ovh.corail.recycler.util.Helper;
 import ovh.corail.recycler.util.LangKey;
-import ovh.corail.recycler.util.RecyclingManager;
-import ovh.corail.recycler.util.RecyclingRecipe;
+import ovh.corail.recycler.recipe.RecyclingManager;
+import ovh.corail.recycler.recipe.RecyclingRecipe;
 
 import javax.annotation.Nullable;
 import java.util.stream.IntStream;

@@ -1,4 +1,4 @@
-package ovh.corail.recycler.util;
+package ovh.corail.recycler.recipe;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -25,6 +25,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import ovh.corail.recycler.ConfigRecycler;
 import ovh.corail.recycler.registry.ModBlocks;
 import ovh.corail.recycler.registry.ModItems;
+import ovh.corail.recycler.util.Helper;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
