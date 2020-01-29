@@ -454,6 +454,89 @@ public class RecyclingManager {
     }
 
     private void loadDefaultRecipes() {
+        // added in 1.14.4
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.SMOOTH_RED_SANDSTONE_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.SMOOTH_RED_SANDSTONE, 3) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.POLISHED_ANDESITE_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.POLISHED_ANDESITE, 3) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.POLISHED_GRANITE_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.POLISHED_GRANITE, 3) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.STONE_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.STONE, 3) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.END_STONE_BRICK_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.END_STONE_BRICKS, 3) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.GRANITE_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.GRANITE, 3) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.MOSSY_STONE_BRICK_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.MOSSY_STONE_BRICKS, 3) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.ANDESITE_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.ANDESITE, 3) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.RED_NETHER_BRICK_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.RED_NETHER_BRICKS, 3) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.SMOOTH_SANDSTONE_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.SMOOTH_SANDSTONE, 3) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.SMOOTH_QUARTZ_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.SMOOTH_QUARTZ, 3) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.DIORITE_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.DIORITE, 3) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.POLISHED_DIORITE_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.POLISHED_DIORITE, 3) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.MOSSY_COBBLESTONE_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.MOSSY_COBBLESTONE, 3) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.RED_NETHER_BRICK_SLAB, 2), new SimpleStack[] { new SimpleStack(Blocks.RED_NETHER_BRICKS) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.MOSSY_STONE_BRICK_SLAB, 2), new SimpleStack[] { new SimpleStack(Blocks.MOSSY_STONE_BRICKS) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.ANDESITE_SLAB, 2), new SimpleStack[] { new SimpleStack(Blocks.ANDESITE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.CUT_SANDSTONE_SLAB, 2), new SimpleStack[] { new SimpleStack(Blocks.CUT_SANDSTONE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.SMOOTH_RED_SANDSTONE_SLAB, 2), new SimpleStack[] { new SimpleStack(Blocks.SMOOTH_RED_SANDSTONE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.POLISHED_GRANITE_SLAB, 2), new SimpleStack[] { new SimpleStack(Blocks.POLISHED_GRANITE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.POLISHED_ANDESITE_SLAB, 2), new SimpleStack[] { new SimpleStack(Blocks.POLISHED_ANDESITE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.SMOOTH_QUARTZ_SLAB, 2), new SimpleStack[] { new SimpleStack(Blocks.SMOOTH_QUARTZ) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.SMOOTH_STONE_SLAB, 2), new SimpleStack[] { new SimpleStack(Blocks.SMOOTH_STONE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.MOSSY_COBBLESTONE_SLAB, 2), new SimpleStack[] { new SimpleStack(Blocks.MOSSY_COBBLESTONE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.GRANITE_SLAB, 2), new SimpleStack[] { new SimpleStack(Blocks.GRANITE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.DIORITE_SLAB, 2), new SimpleStack[] { new SimpleStack(Blocks.DIORITE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.END_STONE_BRICK_SLAB, 2), new SimpleStack[] { new SimpleStack(Blocks.END_STONE_BRICKS) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.SMOOTH_SANDSTONE_SLAB, 2), new SimpleStack[] { new SimpleStack(Blocks.SMOOTH_SANDSTONE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.POLISHED_DIORITE_SLAB, 2), new SimpleStack[] { new SimpleStack(Blocks.POLISHED_DIORITE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.CUT_RED_SANDSTONE_SLAB, 2), new SimpleStack[] { new SimpleStack(Blocks.CUT_RED_SANDSTONE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.DIORITE_WALL), new SimpleStack[] { new SimpleStack(Blocks.DIORITE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.SANDSTONE_WALL), new SimpleStack[] { new SimpleStack(Blocks.SANDSTONE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.RED_SANDSTONE_WALL), new SimpleStack[] { new SimpleStack(Blocks.RED_SANDSTONE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.NETHER_BRICK_WALL), new SimpleStack[] { new SimpleStack(Blocks.NETHER_BRICKS) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.BRICK_WALL), new SimpleStack[] { new SimpleStack(Blocks.BRICKS) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.GRANITE_WALL), new SimpleStack[] { new SimpleStack(Blocks.GRANITE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.MOSSY_STONE_BRICK_WALL), new SimpleStack[] { new SimpleStack(Blocks.MOSSY_STONE_BRICKS) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.PRISMARINE_WALL), new SimpleStack[] { new SimpleStack(Blocks.PRISMARINE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.RED_NETHER_BRICK_WALL), new SimpleStack[] { new SimpleStack(Blocks.RED_NETHER_BRICKS) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.ANDESITE_WALL), new SimpleStack[] { new SimpleStack(Blocks.ANDESITE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.END_STONE_BRICK_WALL), new SimpleStack[] { new SimpleStack(Blocks.END_STONE_BRICKS) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.STONE_BRICK_WALL), new SimpleStack[] { new SimpleStack(Blocks.STONE_BRICKS) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.STONECUTTER), new SimpleStack[] { new SimpleStack(Blocks.STONE, 3), new SimpleStack(Items.IRON_INGOT) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.BONE_BLOCK), new SimpleStack[] { new SimpleStack(Items.BONE_MEAL, 9) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.COAL_BLOCK), new SimpleStack[] { new SimpleStack(Items.COAL, 9) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.DIAMOND_BLOCK), new SimpleStack[] { new SimpleStack(Items.DIAMOND, 9) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.GOLD_BLOCK), new SimpleStack[] { new SimpleStack(Items.GOLD_INGOT, 9) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.IRON_BLOCK), new SimpleStack[] { new SimpleStack(Items.IRON_INGOT, 9) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.NETHER_WART_BLOCK), new SimpleStack[] { new SimpleStack(Blocks.NETHER_WART, 9) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.SLIME_BLOCK), new SimpleStack[] { new SimpleStack(Items.SLIME_BALL, 9) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.EMERALD_BLOCK), new SimpleStack[] { new SimpleStack(Items.EMERALD, 9) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.REDSTONE_BLOCK), new SimpleStack[] { new SimpleStack(Items.REDSTONE, 9) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.LAPIS_BLOCK), new SimpleStack[] { new SimpleStack(Items.LAPIS_LAZULI, 9) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.BLUE_ICE), new SimpleStack[] { new SimpleStack(Blocks.PACKED_ICE, 9) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.PACKED_ICE), new SimpleStack[] { new SimpleStack(Blocks.ICE, 9) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.HAY_BLOCK), new SimpleStack[] { new SimpleStack(Items.WHEAT, 9) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.SNOW_BLOCK), new SimpleStack[] { new SimpleStack(Items.SNOWBALL, 4) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.BARREL), new SimpleStack[] { new SimpleStack(Blocks.ACACIA_PLANKS, 6), new SimpleStack(Blocks.ACACIA_SLAB, 2) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Items.LANTERN), new SimpleStack[] { new SimpleStack(Items.IRON_NUGGET, 8), new SimpleStack(Items.TORCH) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.CARTOGRAPHY_TABLE), new SimpleStack[] { new SimpleStack(Items.PAPER, 2), new SimpleStack(Blocks.ACACIA_PLANKS, 4) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.FLETCHING_TABLE), new SimpleStack[] { new SimpleStack(Items.FLINT, 2), new SimpleStack(Blocks.ACACIA_PLANKS, 4) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.SMITHING_TABLE), new SimpleStack[] { new SimpleStack(Items.IRON_INGOT, 2), new SimpleStack(Blocks.ACACIA_PLANKS, 4) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.COMPOSTER), new SimpleStack[] { new SimpleStack(Items.DARK_OAK_FENCE, 4), new SimpleStack(Blocks.ACACIA_PLANKS, 3) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.BLAST_FURNACE), new SimpleStack[] { new SimpleStack(Items.IRON_INGOT, 5), new SimpleStack(Blocks.SMOOTH_STONE, 3), new SimpleStack(Blocks.FURNACE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.GRINDSTONE), new SimpleStack[] { new SimpleStack(Items.STICK, 2), new SimpleStack(Blocks.STONE_SLAB), new SimpleStack(Blocks.ACACIA_PLANKS, 2) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.LOOM), new SimpleStack[] { new SimpleStack(Items.STRING, 2), new SimpleStack(Blocks.ACACIA_PLANKS, 2) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.SMOKER), new SimpleStack[] { new SimpleStack(Blocks.BIRCH_WOOD, 4), new SimpleStack(Blocks.FURNACE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.CAMPFIRE), new SimpleStack[] { new SimpleStack(Blocks.BIRCH_WOOD, 3), new SimpleStack(Items.STICK, 3), new SimpleStack(Items.CHARCOAL) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.LECTERN), new SimpleStack[] { new SimpleStack(Blocks.ACACIA_SLAB, 4), new SimpleStack(Blocks.BOOKSHELF) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Items.WRITABLE_BOOK), new SimpleStack[] { new SimpleStack(Items.BOOK), new SimpleStack(Items.INK_SAC), new SimpleStack(Items.FEATHER) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.SCAFFOLDING, 6), new SimpleStack[] { new SimpleStack(Items.BAMBOO, 6), new SimpleStack(Items.STRING) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.CUT_RED_SANDSTONE), new SimpleStack[] { new SimpleStack(Blocks.RED_SANDSTONE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.CUT_SANDSTONE), new SimpleStack[] { new SimpleStack(Blocks.SANDSTONE) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Items.LEATHER_HORSE_ARMOR), new SimpleStack[] { new SimpleStack(Items.LEATHER, 7) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Items.CROSSBOW), new SimpleStack[] { new SimpleStack(Items.STICK, 3), new SimpleStack(Items.IRON_INGOT), new SimpleStack(Items.STRING, 2), new SimpleStack(Items.TRIPWIRE_HOOK) }));
+        // sign
+        recipes.add(new RecyclingRecipe(new SimpleStack(Items.ACACIA_SIGN, 3), new SimpleStack[] { new SimpleStack(Blocks.ACACIA_PLANKS, 6), new SimpleStack(Items.STICK) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Items.OAK_SIGN, 3), new SimpleStack[] { new SimpleStack(Blocks.OAK_PLANKS, 6), new SimpleStack(Items.STICK) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Items.BIRCH_SIGN, 3), new SimpleStack[] { new SimpleStack(Blocks.BIRCH_PLANKS, 6), new SimpleStack(Items.STICK) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Items.JUNGLE_SIGN, 3), new SimpleStack[] { new SimpleStack(Blocks.JUNGLE_PLANKS, 6), new SimpleStack(Items.STICK) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Items.SPRUCE_SIGN, 3), new SimpleStack[] { new SimpleStack(Blocks.SPRUCE_PLANKS, 6), new SimpleStack(Items.STICK) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Items.DARK_OAK_SIGN, 3), new SimpleStack[] { new SimpleStack(Blocks.DARK_OAK_PLANKS, 6), new SimpleStack(Items.STICK) }));
         // granite
         recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.GRANITE), new SimpleStack[] { new SimpleStack(Blocks.DIORITE), new SimpleStack(Items.QUARTZ) }));
         // diorite
@@ -806,9 +889,6 @@ public class RecyclingManager {
         recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.IRON_DOOR), new SimpleStack[] { new SimpleStack(Items.IRON_INGOT, 2) }));
         // painting
         recipes.add(new RecyclingRecipe(new SimpleStack(Items.PAINTING), new SimpleStack[] { new SimpleStack(Items.STICK, 8), new SimpleStack(Blocks.WHITE_WOOL) }));
-        // sign
-        // TODO sign post
-        //recipes.add(new RecyclingRecipe(new SimpleStack(Items.SIGN, 3), new SimpleStack[] { new SimpleStack(Blocks.OAK_PLANKS, 6), new SimpleStack(Items.STICK) }));
         // empty bucket
         recipes.add(new RecyclingRecipe(new SimpleStack(Items.BUCKET), new SimpleStack[] { new SimpleStack(Items.IRON_INGOT, 3) }));
         // minecart
