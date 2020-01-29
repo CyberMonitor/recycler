@@ -12,11 +12,13 @@ import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.StringTextComponent;
+import ovh.corail.recycler.util.Helper;
 import ovh.corail.recycler.util.JsonRecyclingRecipe;
 import ovh.corail.recycler.util.LangKey;
 import ovh.corail.recycler.util.RecyclingManager;
 
 import java.io.File;
+import java.util.stream.Collectors;
 
 public class CommandRecycler {
     private final CommandDispatcher<CommandSource> commandDispatcher;
@@ -67,14 +69,8 @@ public class CommandRecycler {
     private int processExportCraftingRecipes(CommandSource source) {
         ServerPlayerEntity player = source.getEntity() instanceof ServerPlayerEntity ? (ServerPlayerEntity) source.getEntity() : null;
         RecyclingManager rm = RecyclingManager.instance;
-        NonNullList<JsonRecyclingRecipe> list = NonNullList.create();
         // only recipes not in the recycler
-        source.getWorld().getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(recipe -> recipe != null && !recipe.getRecipeOutput().isEmpty() && rm.getRecipe(recipe.getRecipeOutput(), false) == null).forEach(recipe -> {
-            JsonRecyclingRecipe res = rm.convertRecipeToJson((ICraftingRecipe) recipe);
-            if (res != null) {
-                list.add(res);
-            }
-        });
+        NonNullList<JsonRecyclingRecipe> list = source.getWorld().getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(recipe -> Helper.isValidRecipe(recipe) && rm.getRecipe(recipe.getRecipeOutput(), false) == null).map(recipe -> new JsonRecyclingRecipe((ICraftingRecipe) recipe)).collect(Collectors.toCollection(NonNullList::create));
         LangKey.MESSAGE_FOUND_RECIPES.sendMessage(player, list.size());
         File exportFile = new File(RecyclingManager.instance.CONFIG_DIR, "export_crafting_recipes.json");
         boolean success = rm.saveAsJson(exportFile, list);

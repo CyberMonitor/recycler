@@ -1,7 +1,6 @@
 package ovh.corail.recycler.block;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -109,11 +108,6 @@ public class BlockRecycler extends Block {
     @Override
     public int getLightValue(BlockState state) {
         return state.get(ENABLED) ? 15 : 0;
-    }
-
-    @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
     }
 
     @Override

@@ -15,7 +15,6 @@ import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.Ingredient;
@@ -78,7 +77,7 @@ public class RecyclingManager {
             return true;
         } else {
             // new recipe added
-            recipe = world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(craftingRecipe -> Helper.areItemEqual(craftingRecipe.getRecipeOutput(), stack)).map(this::convertCraftingRecipe).findFirst().orElse(null);
+            recipe = world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(craftingRecipe -> Helper.isValidRecipe(craftingRecipe) && Helper.areItemEqual(craftingRecipe.getRecipeOutput(), stack)).map(this::convertCraftingRecipe).findFirst().orElse(null);
             // add recipe and save user defined recipes to json
             if (recipe != null && recipe.getCount() > 0 && !recipe.getItemRecipe().isEmpty()) {
                 addRecipe(recipe);
@@ -335,7 +334,7 @@ public class RecyclingManager {
     }
 
     private boolean saveUserDefinedRecipes() {
-        return saveAsJson(this.userDefinedFile, this.recipes.stream().filter(RecyclingRecipe::isUserDefined).map(this::convertRecipeToJson).collect(Collectors.toCollection(NonNullList::create)));
+        return saveAsJson(this.userDefinedFile, this.recipes.stream().filter(recipe -> recipe.isUserDefined() && Helper.isValidRecipe(recipe)).map(JsonRecyclingRecipe::new).collect(Collectors.toCollection(NonNullList::create)));
     }
 
     public boolean saveAsJson(File file, NonNullList list) {
@@ -420,16 +419,6 @@ public class RecyclingManager {
         return recipe;
     }
 
-    @Nullable
-    public JsonRecyclingRecipe convertRecipeToJson(RecyclingRecipe recipe) {
-        return recipe.getItemRecipe().isEmpty() ? null : new JsonRecyclingRecipe(recipe);
-    }
-
-    @Nullable
-    public JsonRecyclingRecipe convertRecipeToJson(ICraftingRecipe recipe) {
-        return recipe.getRecipeOutput().isEmpty() ? null : new JsonRecyclingRecipe(recipe);
-    }
-
     private void addToCollection(Collection<SimpleStack> list, @Nullable Block block) {
         if (block != null) {
             addToCollection(list, block.asItem());
@@ -443,7 +432,7 @@ public class RecyclingManager {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends IRecipe> RecyclingRecipe convertCraftingRecipe(T iRecipe) {
+    public RecyclingRecipe convertCraftingRecipe(IRecipe iRecipe) {
         NonNullList<Ingredient> ingredients = iRecipe.getIngredients();
         NonNullList<ItemStack> stacks = Helper.mergeStackInList(ingredients.stream().filter(p -> p.getMatchingStacks().length > 0 && !p.getMatchingStacks()[0].isEmpty()).map(m -> m.getMatchingStacks()[0].copy()).collect(Collectors.toCollection(NonNullList::create)));
         RecyclingRecipe recipe = new RecyclingRecipe(new SimpleStack(iRecipe.getRecipeOutput()), stacks.stream().map(SimpleStack::new).collect(Collectors.toCollection(NonNullList::create)));
@@ -454,6 +443,10 @@ public class RecyclingManager {
     }
 
     private void loadDefaultRecipes() {
+        // 1.15
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.BEEHIVE), new SimpleStack[] { new SimpleStack(Blocks.BIRCH_PLANKS, 6), new SimpleStack(Items.HONEYCOMB, 3) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.HONEY_BLOCK), new SimpleStack[] { new SimpleStack(Items.HONEY_BOTTLE, 4) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.HONEYCOMB_BLOCK), new SimpleStack[] { new SimpleStack(Items.HONEYCOMB, 4) }));
         // added in 1.14.4
         recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.SMOOTH_RED_SANDSTONE_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.SMOOTH_RED_SANDSTONE, 3) }));
         recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.POLISHED_ANDESITE_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.POLISHED_ANDESITE, 3) }));
