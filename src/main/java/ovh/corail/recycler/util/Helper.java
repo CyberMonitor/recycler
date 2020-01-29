@@ -80,8 +80,11 @@ public class Helper {
                 return true;
             }
             // skip empty itemstack
-            if (stackIn.isEmpty() || !stackIn.isStackable()) {
+            if (stackIn.isEmpty()) {
                 minCount--;
+                continue;
+            }
+            if (!stackIn.isStackable()) {
                 continue;
             }
             int left = stackIn.getCount();
