@@ -1,6 +1,6 @@
 package ovh.corail.recycler.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
@@ -136,7 +136,7 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         updateButtons();
         renderBackground();
-        GlStateManager.color4f(1f, 1f, 1f, 1f);
+        RenderSystem.color4f(1f, 1f, 1f, 1f);
         // recycling book background
         getMinecraft().getTextureManager().bindTexture(TEXTURE_RECYCLING_BOOK);
         blit(guiLeft, guiTop, 0, 0, xSize, ySize);
@@ -150,13 +150,13 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
-        GlStateManager.scaled(0.5d, 0.5d, 0.5d);
+        RenderSystem.pushMatrix();
+        RenderSystem.scaled(0.5d, 0.5d, 0.5d);
         // name of the recipe
         this.container.inventorySlots.stream().filter(p -> p.getSlotIndex() % 10 == 0 && !p.getStack().isEmpty()).forEach(c -> drawString(this.font, c.getStack().getDisplayName().getUnformattedComponentText(), (c.xPos - 2) * 2, (c.yPos - 22) * 2, this.textColor));
         // page number
         this.font.drawStringWithShadow((this.container.getPageNum() + 1) + "/" + (this.container.getPageMax() + 1), 428, 240, this.textColor);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
         // title of the book
         String title = TextFormatting.BOLD + I18n.format(LangKey.MESSAGE_RECYCLING_BOOK.getKey());
         this.font.drawStringWithShadow(title, (this.xSize - this.font.getStringWidth(title)) / 2f, -10, this.textColor);

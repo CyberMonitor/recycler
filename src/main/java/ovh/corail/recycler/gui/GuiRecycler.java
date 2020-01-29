@@ -1,6 +1,6 @@
 package ovh.corail.recycler.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.gui.widget.button.ImageButton;
@@ -40,35 +40,23 @@ public class GuiRecycler extends ContainerScreen<ContainerRecycler> {
         super.init();
         getMinecraft().keyboardListener.enableRepeatEvents(true);
         // Recycle
-        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 120, 53, 14, I18n.format(LangKey.BUTTON_RECYLE.getKey()), pressable -> {
-            PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.RECYCLE, this.container.getPosition()));
-        }));
+        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 120, 53, 14, I18n.format(LangKey.BUTTON_RECYLE.getKey()), pressable -> PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.RECYCLE, this.container.getPosition()))));
         // Switch Working
-        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 139, 53, 14, I18n.format(LangKey.BUTTON_AUTO.getKey()), pressable -> {
-            PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.SWITCH_AUTO, this.container.getPosition()));
-        }));
+        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 139, 53, 14, I18n.format(LangKey.BUTTON_AUTO.getKey()), pressable -> PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.SWITCH_AUTO, this.container.getPosition()))));
         // Take All
-        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 157, 53, 14, I18n.format(LangKey.BUTTON_TAKE_ALL.getKey()), pressable -> {
-            PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.TAKE_ALL, this.container.getPosition()));
-        }));
+        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 157, 53, 14, I18n.format(LangKey.BUTTON_TAKE_ALL.getKey()), pressable -> PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.TAKE_ALL, this.container.getPosition()))));
         // Create Recipe
-        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 175, 53, 14, I18n.format(LangKey.BUTTON_DISCOVER_RECIPE.getKey()), pressable -> {
-            PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.DISCOVER_RECIPE, this.container.getPosition()));
-        }));
+        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 175, 53, 14, I18n.format(LangKey.BUTTON_DISCOVER_RECIPE.getKey()), pressable -> PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.DISCOVER_RECIPE, this.container.getPosition()))));
         // Remove Recipe
-        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 175, 53, 14, I18n.format(LangKey.BUTTON_REMOVE_RECIPE.getKey()), pressable -> {
-            PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.REMOVE_RECIPE, this.container.getPosition()));
-        }));
+        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 175, 53, 14, I18n.format(LangKey.BUTTON_REMOVE_RECIPE.getKey()), pressable -> PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.REMOVE_RECIPE, this.container.getPosition()))));
         // open recycling_book
-        addButton(new ImageButton(this.guiLeft + 148, this.guiTop + 64, 20, 18, 178, 0, 19, INVENTORY_BACKGROUND, pressable -> {
-            PacketHandler.sendToServer(new ServerRecyclingBookMessage(RecyclingBookAction.RECYCLING_BOOK));
-        }));
+        addButton(new ImageButton(this.guiLeft + 148, this.guiTop + 64, 20, 18, 178, 0, 19, INVENTORY_BACKGROUND, pressable -> PacketHandler.sendToServer(new ServerRecyclingBookMessage(RecyclingBookAction.RECYCLING_BOOK))));
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         renderBackground();
-        GlStateManager.color4f(1f, 1f, 1f, 1f);
+        RenderSystem.color4f(1f, 1f, 1f, 1f);
         // recycler background
         getMinecraft().getTextureManager().bindTexture(TEXTURE_RECYCLER);
         blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
@@ -92,7 +80,8 @@ public class GuiRecycler extends ContainerScreen<ContainerRecycler> {
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         // draw the player on gui
         int entityX = 86, entityY = 50;
-        InventoryScreen.drawEntityOnScreen(entityX, entityY, 20, (float) (2 * entityX - mouseX), (float) (entityY - mouseY), getMinecraft().player);
+        //drawEntityOnScreen
+        InventoryScreen.func_228187_a_(entityX, entityY, 20, (float) (2 * entityX - mouseX), (float) (entityY - mouseY), getMinecraft().player);
         getMinecraft().textureManager.bindTexture(TEXTURE_RECYCLER);
         // arrow in background
         blit(115, 81, 79, 210, 22, 15);
@@ -103,14 +92,14 @@ public class GuiRecycler extends ContainerScreen<ContainerRecycler> {
 
         int currentPower = this.container.getRecycler().getEnergy();
 
-        GlStateManager.color4f(1f, 1f, 1f, 1f);
+        RenderSystem.color4f(1f, 1f, 1f, 1f);
         getMinecraft().getTextureManager().bindTexture(TEXTURE_BAR);
         blit(70, 112, 0f, 20f, 136, 3, 136, 256);
         blit(70, 112, 0f, 25f, (int) (136 * 0.71d * currentPower) / this.container.getRecycler().getMaxEnergy(), 2, 136, 256);
         blit(70, 112, 0f, 81f, 136, 3, 136, 256);
 
-        GlStateManager.pushMatrix();
-        GlStateManager.scaled(0.6d, 0.6d, 0.6d);
+        RenderSystem.pushMatrix();
+        RenderSystem.scaled(0.6d, 0.6d, 0.6d);
         // disk useLeft
         Slot diskSlot = this.container.inventorySlots.get(1);
         ItemStack diskStack = diskSlot.getStack();
@@ -121,7 +110,7 @@ public class GuiRecycler extends ContainerScreen<ContainerRecycler> {
         this.font.drawString(this.container.getInputMax() + "", (int) ((recycledSlot.xPos + 20) / 0.6d), (int) ((recycledSlot.yPos + 4) / 0.6d), (this.container.getInputMax() > 0 ? 0x00ff00 : 0xff0000));
 
         this.font.drawString(String.format("%5s", currentPower) + " / " + this.container.getRecycler().getMaxEnergy(), (int) (120 / 0.6d), (int) (104 / 0.6d), currentPower >= 10 ? 0x00ff00 : 0xff0000);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     @Override
