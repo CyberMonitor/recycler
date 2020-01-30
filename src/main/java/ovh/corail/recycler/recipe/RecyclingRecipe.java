@@ -20,7 +20,7 @@ public class RecyclingRecipe {
         this.itemsList.addAll(stacksOut);
     }
 
-    RecyclingRecipe(SimpleStack stackIn, SimpleStack[] stacksOut) {
+    public RecyclingRecipe(SimpleStack stackIn, SimpleStack[] stacksOut) {
         this.itemRecipe = stackIn;
         Collections.addAll(itemsList, stacksOut);
     }

@@ -49,8 +49,8 @@ public class Helper {
         return !s1.isEmpty() && s1.getItem() == s2.getItem();
     }
 
-    public static boolean isValidRecipe(RecyclingRecipe recipe) {
-        return !recipe.getResult().isEmpty() && !recipe.getItemRecipe().isEmpty();
+    public static boolean isValidRecipe(@Nullable RecyclingRecipe recipe) {
+        return recipe != null && !recipe.getResult().isEmpty() && !recipe.getItemRecipe().isEmpty();
     }
 
     public static boolean isValidRecipe(@Nullable IRecipe recipe) {

@@ -80,8 +80,8 @@ public class RecyclingManager {
             // new recipe added
             recipe = world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(craftingRecipe -> Helper.isValidRecipe(craftingRecipe) && Helper.areItemEqual(craftingRecipe.getRecipeOutput(), stack)).map(this::convertCraftingRecipe).findFirst().orElse(null);
             // add recipe and save user defined recipes to json
-            if (recipe != null && recipe.getCount() > 0 && !recipe.getItemRecipe().isEmpty()) {
-                addRecipe(recipe);
+            if (Helper.isValidRecipe(recipe)) {
+                this.recipes.add(recipe);
                 return saveUserDefinedRecipes();
             }
             return false;
@@ -161,12 +161,9 @@ public class RecyclingManager {
         saveAsJson(this.blacklistFile, this.recipes.stream().filter(p -> !p.isAllowed()).map(recipe -> recipe.getItemRecipe().toString()).collect(Collectors.toCollection(NonNullList::create)));
     }
 
-    private RecyclingRecipe getRecipe(int index) {
-        return this.recipes.get(index);
-    }
-
-    private void addRecipe(RecyclingRecipe recipe) {
+    public RecyclingManager addRecipe(RecyclingRecipe recipe) {
         this.recipes.add(recipe);
+        return this;
     }
 
     public boolean removeRecipe(ItemStack stack) {
@@ -334,7 +331,7 @@ public class RecyclingManager {
         return this.grindList.stream().filter(grind -> SimpleStack.areItemEqual(grind.getLeft(), stack)).map(ImmutablePair::getRight).findFirst().orElse(SimpleStack.EMPTY);
     }
 
-    private boolean saveUserDefinedRecipes() {
+    public boolean saveUserDefinedRecipes() {
         return saveAsJson(this.userDefinedFile, this.recipes.stream().filter(recipe -> recipe.isUserDefined() && Helper.isValidRecipe(recipe)).map(JsonRecyclingRecipe::new).collect(Collectors.toCollection(NonNullList::create)));
     }
 
