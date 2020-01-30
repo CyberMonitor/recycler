@@ -398,6 +398,8 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
                     return progress;
                 case 2:
                     return inputMax;
+                case 3:
+                    return energyStorage.getEnergyStored();
                 default:
                     return 0;
             }
@@ -415,12 +417,22 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
                 case 2:
                     inputMax = value;
                     break;
+                case 3:
+                    int diff = value - energyStorage.getEnergyStored();
+                    if (diff >= 0) {
+                        energyStorage.receiveEnergy(diff, false);
+                    } else {
+                        energyStorage.extractEnergy(-diff, false);
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
         @Override
         public int size() {
-            return 3;
+            return 4;
         }
     }
 }

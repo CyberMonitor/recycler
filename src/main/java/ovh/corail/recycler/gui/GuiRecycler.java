@@ -90,7 +90,7 @@ public class GuiRecycler extends ContainerScreen<ContainerRecycler> {
             blit(115, 81, 79, 225, (this.container.getProgress() * 22 / 100), 15);
         }
 
-        int currentPower = this.container.getRecycler().getEnergy();
+        int currentPower = this.container.getEnergy();
 
         RenderSystem.color4f(1f, 1f, 1f, 1f);
         getMinecraft().getTextureManager().bindTexture(TEXTURE_BAR);
