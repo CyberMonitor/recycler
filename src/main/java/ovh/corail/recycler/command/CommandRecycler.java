@@ -37,7 +37,7 @@ public class CommandRecycler {
     private int processAddRecipe(CommandSource source, SimpleStack ingredient, SimpleStack... results) {
         ServerPlayerEntity player = source.getEntity() instanceof ServerPlayerEntity ? (ServerPlayerEntity) source.getEntity() : null;
         RecyclingRecipe recipe = new RecyclingRecipe(ingredient, results);
-        if (Helper.isValidRecipe(recipe) && RecyclingManager.instance.addRecipe(recipe).saveUserDefinedRecipes()) {
+        if (Helper.isValidRecipe(recipe) && RecyclingManager.instance.addRecipe(recipe.setUserDefined(true)).saveUserDefinedRecipes()) {
             LangKey.MESSAGE_ADD_RECIPE_SUCCESS.sendMessage(player);
             return 1;
         }
@@ -45,10 +45,12 @@ public class CommandRecycler {
         return 0;
     }
 
-    private int processDiscoverRecipe(CommandSource source, ItemInput inputStack) throws CommandSyntaxException {
+    private int processDiscoverRecipe(CommandSource source, ItemStack stack) {
         ServerPlayerEntity player = source.getEntity() instanceof ServerPlayerEntity ? (ServerPlayerEntity) source.getEntity() : null;
-        ItemStack stackToDiscover = inputStack != null ? inputStack.createStack(1, false) : player != null ? player.getHeldItemMainhand() : ItemStack.EMPTY;
-        if (!stackToDiscover.isEmpty() && RecyclingManager.instance.discoverRecipe(source.getWorld(), stackToDiscover)) {
+        if (stack.isEmpty() && player != null) {
+            stack = player.getHeldItemMainhand();
+        }
+        if (!stack.isEmpty() && RecyclingManager.instance.discoverRecipe(source.getWorld(), stack)) {
             LangKey.MESSAGE_ADD_RECIPE_SUCCESS.sendMessage(player);
             return 1;
         }
@@ -56,10 +58,12 @@ public class CommandRecycler {
         return 0;
     }
 
-    private int processRemoveRecipe(CommandSource source, ItemInput stack) throws CommandSyntaxException {
+    private int processRemoveRecipe(CommandSource source, ItemStack stack) {
         ServerPlayerEntity player = source.getEntity() instanceof ServerPlayerEntity ? (ServerPlayerEntity) source.getEntity() : null;
-        ItemStack stackToRemove = stack != null ? stack.createStack(1, false) : player != null ? player.getHeldItemMainhand() : ItemStack.EMPTY;
-        if (!stackToRemove.isEmpty() && RecyclingManager.instance.removeRecipe(stackToRemove)) {
+        if (stack.isEmpty() && player != null) {
+            stack = player.getHeldItemMainhand();
+        }
+        if (!stack.isEmpty() && RecyclingManager.instance.removeRecipe(stack)) {
             LangKey.MESSAGE_REMOVE_RECIPE_SUCCESS.sendMessage(player);
             return 1;
         }
@@ -103,10 +107,10 @@ public class CommandRecycler {
         ))))))))))))))))))));
         this.commandDispatcher.register(Commands.literal("recycler").requires(p -> p.hasPermissionLevel(2))
             .executes(c -> showUsage(c.getSource()))
-            .then(Commands.literal("discover_recipe").executes(c -> processDiscoverRecipe(c.getSource(), null))
-                .then(Commands.argument("item", ItemArgument.item()).executes(c -> processDiscoverRecipe(c.getSource(), ItemArgument.getItem(c, "item"))))
-            ).then(Commands.literal("remove_recipe").executes(c -> processRemoveRecipe(c.getSource(), null))
-                .then(Commands.argument("item", ItemArgument.item()).executes(c -> processRemoveRecipe(c.getSource(), ItemArgument.getItem(c, "item"))))
+            .then(Commands.literal("discover_recipe").executes(c -> processDiscoverRecipe(c.getSource(), ItemStack.EMPTY))
+                .then(Commands.argument("item", ItemArgument.item()).executes(c -> processDiscoverRecipe(c.getSource(), ItemArgument.getItem(c, "item").createStack(1, false))))
+            ).then(Commands.literal("remove_recipe").executes(c -> processRemoveRecipe(c.getSource(), ItemStack.EMPTY))
+                .then(Commands.argument("item", ItemArgument.item()).executes(c -> processRemoveRecipe(c.getSource(), ItemArgument.getItem(c, "item").createStack(1, false))))
             ).then(Commands.literal("export_crafting_recipes").executes(c -> processExportCraftingRecipes(c.getSource()))
             ).then(createRecipeBuilder));
     }
