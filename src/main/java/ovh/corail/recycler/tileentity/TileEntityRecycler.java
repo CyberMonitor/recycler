@@ -150,6 +150,9 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
         }
         // play recycler sound
         ModSounds.playSoundAllAround(ModSounds.RECYCLER, SoundCategory.BLOCKS, this.world, this.pos, 0.5f, 0.5f + this.world.rand.nextFloat() * 0.5f);
+        if (inventWorking.getStackInSlot(0).isEmpty()) {
+            updateRecyclingRecipe();
+        }
         return true;
     }
 
