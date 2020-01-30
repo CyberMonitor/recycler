@@ -50,6 +50,10 @@ public class ContainerRecycler extends Container {
         return this.recyclerData.get(2);
     }
 
+    public int getEnergy() {
+        return this.recyclerData.get(3);
+    }
+
     public BlockPos getPosition() {
         return this.recycler.getPos();
     }

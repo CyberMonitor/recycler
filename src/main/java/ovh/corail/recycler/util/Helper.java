@@ -3,10 +3,13 @@ package ovh.corail.recycler.util;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import ovh.corail.recycler.recipe.RecyclingRecipe;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,8 +37,24 @@ public class Helper {
         return !(entity instanceof FakePlayer);
     }
 
+    public static boolean atInterval(long ticksExisted, int tick) {
+        return ticksExisted > 0 && ticksExisted % tick == 0;
+    }
+
+    public static boolean atInterval(World world, int tick) {
+        return atInterval(world.getGameTime(), tick);
+    }
+
     public static boolean areItemEqual(ItemStack s1, ItemStack s2) {
         return !s1.isEmpty() && s1.getItem() == s2.getItem();
+    }
+
+    public static boolean isValidRecipe(@Nullable RecyclingRecipe recipe) {
+        return recipe != null && !recipe.getResult().isEmpty() && !recipe.getItemRecipe().isEmpty();
+    }
+
+    public static boolean isValidRecipe(@Nullable IRecipe recipe) {
+        return recipe != null && !recipe.getIngredients().isEmpty() && !recipe.getRecipeOutput().isEmpty();
     }
 
     public static NonNullList<ItemStack> mergeStackInList(NonNullList<ItemStack> list) {

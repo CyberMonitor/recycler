@@ -19,7 +19,7 @@ import ovh.corail.recycler.network.PacketHandler;
 import ovh.corail.recycler.registry.ModContainers;
 import ovh.corail.recycler.registry.ModTabs;
 import ovh.corail.recycler.registry.ModTriggers;
-import ovh.corail.recycler.util.RecyclingManager;
+import ovh.corail.recycler.recipe.RecyclingManager;
 
 @Mod("corail_recycler")
 public class ModRecycler {

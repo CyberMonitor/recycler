@@ -1,26 +1,27 @@
-package ovh.corail.recycler.util;
+package ovh.corail.recycler.recipe;
 
 import net.minecraft.util.NonNullList;
 
 import java.util.Collections;
 
+@SuppressWarnings({ "WeakerAccess", "UnusedReturnValue" })
 public class RecyclingRecipe {
-    private final SimpleStack itemRecipe;
-    private boolean isUnbalanced = false;
-    private boolean isUserDefined = false;
-    private boolean isAllowed = true;
-    private final NonNullList<SimpleStack> itemsList = NonNullList.create();
+    protected final SimpleStack itemRecipe;
+    protected boolean isUnbalanced = false;
+    protected boolean isUserDefined = false;
+    protected boolean isAllowed = true;
+    protected final NonNullList<SimpleStack> itemsList = NonNullList.create();
 
-    RecyclingRecipe(SimpleStack stack) {
+    public RecyclingRecipe(SimpleStack stack) {
         this.itemRecipe = stack;
     }
 
-    RecyclingRecipe(SimpleStack stack, NonNullList<SimpleStack> stacksOut) {
+    public RecyclingRecipe(SimpleStack stack, NonNullList<SimpleStack> stacksOut) {
         this.itemRecipe = stack;
         this.itemsList.addAll(stacksOut);
     }
 
-    RecyclingRecipe(SimpleStack stackIn, SimpleStack[] stacksOut) {
+    public RecyclingRecipe(SimpleStack stackIn, SimpleStack[] stacksOut) {
         this.itemRecipe = stackIn;
         Collections.addAll(itemsList, stacksOut);
     }
@@ -29,27 +30,30 @@ public class RecyclingRecipe {
         return this.itemRecipe;
     }
 
-    void setUnbalanced(boolean state) {
+    public RecyclingRecipe setUnbalanced(boolean state) {
         this.isUnbalanced = state;
+        return this;
     }
 
-    boolean isUnbalanced() {
+    public boolean isUnbalanced() {
         return this.isUnbalanced;
     }
 
-    void setUserDefined(boolean state) {
+    public RecyclingRecipe setUserDefined(boolean state) {
         this.isUserDefined = state;
+        return this;
     }
 
-    boolean isUserDefined() {
+    public boolean isUserDefined() {
         return this.isUserDefined;
     }
 
-    void setAllowed(boolean state) {
+    public RecyclingRecipe setAllowed(boolean state) {
         this.isAllowed = state;
+        return this;
     }
 
-    boolean isAllowed() {
+    public boolean isAllowed() {
         return this.isAllowed;
     }
 
@@ -57,7 +61,7 @@ public class RecyclingRecipe {
         return this.itemsList.size();
     }
 
-    void addStack(SimpleStack stack) {
+    public void addStack(SimpleStack stack) {
         this.itemsList.add(stack);
     }
 

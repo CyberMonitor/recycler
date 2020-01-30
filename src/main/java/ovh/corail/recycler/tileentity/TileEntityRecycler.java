@@ -31,8 +31,8 @@ import ovh.corail.recycler.registry.ModSounds;
 import ovh.corail.recycler.registry.ModTileEntityTypes;
 import ovh.corail.recycler.util.Helper;
 import ovh.corail.recycler.util.LangKey;
-import ovh.corail.recycler.util.RecyclingManager;
-import ovh.corail.recycler.util.RecyclingRecipe;
+import ovh.corail.recycler.recipe.RecyclingManager;
+import ovh.corail.recycler.recipe.RecyclingRecipe;
 
 import javax.annotation.Nullable;
 import java.util.stream.IntStream;
@@ -150,6 +150,9 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
         }
         // play recycler sound
         ModSounds.playSoundAllAround(ModSounds.RECYCLER, SoundCategory.BLOCKS, this.world, this.pos, 0.5f, 0.5f + this.world.rand.nextFloat() * 0.5f);
+        if (inventWorking.getStackInSlot(0).isEmpty()) {
+            updateRecyclingRecipe();
+        }
         return true;
     }
 
@@ -159,7 +162,7 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
             return;
         }
         // autofill the working slots
-        if (this.world.getGameTime() % 10 == 0) {
+        if (Helper.atInterval(this.world, 10)) {
             ItemStack stackToRecycle = this.inventWorking.getStackInSlot(0);
             boolean requireRecipeUpdate = false;
             if (stackToRecycle.isEmpty()) {
@@ -233,10 +236,10 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
             }
             this.countTicks = maxTicks;
             // play working sound
-        } else if (cantRecycleTicks <= 1 && countTicks % 15 == 0) {
-            ModSounds.playSoundAllAround(ModSounds.RECYCLER_WORKING, SoundCategory.BLOCKS, world, pos, 0.5f, 0.5f + world.rand.nextFloat() * 0.5f);
+        } else if (this.cantRecycleTicks <= 1 && Helper.atInterval(this.countTicks, 15)) {
+            ModSounds.playSoundAllAround(ModSounds.RECYCLER_WORKING, SoundCategory.BLOCKS, this.world, this.pos, 0.5f, 0.5f + this.world.rand.nextFloat() * 0.5f);
             for (int i = 0; i < 4; i++) {
-                world.addParticle(ParticleTypes.SMOKE, (double) pos.getX() + Helper.random.nextDouble(), (double) pos.getY() + Helper.random.nextDouble(), (double) pos.getZ() + Helper.random.nextDouble(), 0d, 0d, 0d);
+                this.world.addParticle(ParticleTypes.SMOKE, (double) this.pos.getX() + Helper.random.nextDouble(), (double) this.pos.getY() + Helper.random.nextDouble(), (double) this.pos.getZ() + Helper.random.nextDouble(), 0d, 0d, 0d);
             }
         }
         this.progress = (maxTicks - this.countTicks) * 100 / maxTicks;
@@ -398,6 +401,8 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
                     return progress;
                 case 2:
                     return inputMax;
+                case 3:
+                    return energyStorage.getEnergyStored();
                 default:
                     return 0;
             }
@@ -415,12 +420,22 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
                 case 2:
                     inputMax = value;
                     break;
+                case 3:
+                    int diff = value - energyStorage.getEnergyStored();
+                    if (diff >= 0) {
+                        energyStorage.receiveEnergy(diff, false);
+                    } else {
+                        energyStorage.extractEnergy(-diff, false);
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
         @Override
         public int size() {
-            return 3;
+            return 4;
         }
     }
 }

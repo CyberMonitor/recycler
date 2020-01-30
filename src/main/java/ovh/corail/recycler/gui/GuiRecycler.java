@@ -40,29 +40,17 @@ public class GuiRecycler extends ContainerScreen<ContainerRecycler> {
         super.init();
         getMinecraft().keyboardListener.enableRepeatEvents(true);
         // Recycle
-        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 120, 53, 14, I18n.format(LangKey.BUTTON_RECYLE.getKey()), pressable -> {
-            PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.RECYCLE, this.container.getPosition()));
-        }));
+        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 120, 53, 14, I18n.format(LangKey.BUTTON_RECYLE.getKey()), pressable -> PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.RECYCLE, this.container.getPosition()))));
         // Switch Working
-        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 139, 53, 14, I18n.format(LangKey.BUTTON_AUTO.getKey()), pressable -> {
-            PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.SWITCH_AUTO, this.container.getPosition()));
-        }));
+        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 139, 53, 14, I18n.format(LangKey.BUTTON_AUTO.getKey()), pressable -> PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.SWITCH_AUTO, this.container.getPosition()))));
         // Take All
-        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 157, 53, 14, I18n.format(LangKey.BUTTON_TAKE_ALL.getKey()), pressable -> {
-            PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.TAKE_ALL, this.container.getPosition()));
-        }));
+        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 157, 53, 14, I18n.format(LangKey.BUTTON_TAKE_ALL.getKey()), pressable -> PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.TAKE_ALL, this.container.getPosition()))));
         // Create Recipe
-        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 175, 53, 14, I18n.format(LangKey.BUTTON_DISCOVER_RECIPE.getKey()), pressable -> {
-            PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.DISCOVER_RECIPE, this.container.getPosition()));
-        }));
+        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 175, 53, 14, I18n.format(LangKey.BUTTON_DISCOVER_RECIPE.getKey()), pressable -> PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.DISCOVER_RECIPE, this.container.getPosition()))));
         // Remove Recipe
-        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 175, 53, 14, I18n.format(LangKey.BUTTON_REMOVE_RECIPE.getKey()), pressable -> {
-            PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.REMOVE_RECIPE, this.container.getPosition()));
-        }));
+        addButton(new ButtonRecycler(this.guiLeft + 174, this.guiTop + 175, 53, 14, I18n.format(LangKey.BUTTON_REMOVE_RECIPE.getKey()), pressable -> PacketHandler.sendToServer(new ServerRecyclerMessage(RecyclerAction.REMOVE_RECIPE, this.container.getPosition()))));
         // open recycling_book
-        addButton(new ImageButton(this.guiLeft + 148, this.guiTop + 64, 20, 18, 178, 0, 19, INVENTORY_BACKGROUND, pressable -> {
-            PacketHandler.sendToServer(new ServerRecyclingBookMessage(RecyclingBookAction.RECYCLING_BOOK));
-        }));
+        addButton(new ImageButton(this.guiLeft + 148, this.guiTop + 64, 20, 18, 178, 0, 19, INVENTORY_BACKGROUND, pressable -> PacketHandler.sendToServer(new ServerRecyclingBookMessage(RecyclingBookAction.RECYCLING_BOOK))));
     }
 
     @Override
@@ -101,7 +89,7 @@ public class GuiRecycler extends ContainerScreen<ContainerRecycler> {
             blit(115, 81, 79, 225, (this.container.getProgress() * 22 / 100), 15);
         }
 
-        int currentPower = this.container.getRecycler().getEnergy();
+        int currentPower = this.container.getEnergy();
 
         GlStateManager.color4f(1f, 1f, 1f, 1f);
         getMinecraft().getTextureManager().bindTexture(TEXTURE_BAR);

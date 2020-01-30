@@ -1,4 +1,4 @@
-package ovh.corail.recycler.util;
+package ovh.corail.recycler.recipe;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,7 +15,6 @@ import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.Ingredient;
@@ -26,6 +25,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import ovh.corail.recycler.ConfigRecycler;
 import ovh.corail.recycler.registry.ModBlocks;
 import ovh.corail.recycler.registry.ModItems;
+import ovh.corail.recycler.util.Helper;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
@@ -78,10 +78,10 @@ public class RecyclingManager {
             return true;
         } else {
             // new recipe added
-            recipe = world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(craftingRecipe -> Helper.areItemEqual(craftingRecipe.getRecipeOutput(), stack)).map(this::convertCraftingRecipe).findFirst().orElse(null);
+            recipe = world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(craftingRecipe -> Helper.isValidRecipe(craftingRecipe) && Helper.areItemEqual(craftingRecipe.getRecipeOutput(), stack)).map(this::convertCraftingRecipe).findFirst().orElse(null);
             // add recipe and save user defined recipes to json
-            if (recipe != null && recipe.getCount() > 0 && !recipe.getItemRecipe().isEmpty()) {
-                addRecipe(recipe);
+            if (Helper.isValidRecipe(recipe)) {
+                this.recipes.add(recipe);
                 return saveUserDefinedRecipes();
             }
             return false;
@@ -161,12 +161,9 @@ public class RecyclingManager {
         saveAsJson(this.blacklistFile, this.recipes.stream().filter(p -> !p.isAllowed()).map(recipe -> recipe.getItemRecipe().toString()).collect(Collectors.toCollection(NonNullList::create)));
     }
 
-    private RecyclingRecipe getRecipe(int index) {
-        return this.recipes.get(index);
-    }
-
-    private void addRecipe(RecyclingRecipe recipe) {
+    public RecyclingManager addRecipe(RecyclingRecipe recipe) {
         this.recipes.add(recipe);
+        return this;
     }
 
     public boolean removeRecipe(ItemStack stack) {
@@ -334,8 +331,8 @@ public class RecyclingManager {
         return this.grindList.stream().filter(grind -> SimpleStack.areItemEqual(grind.getLeft(), stack)).map(ImmutablePair::getRight).findFirst().orElse(SimpleStack.EMPTY);
     }
 
-    private boolean saveUserDefinedRecipes() {
-        return saveAsJson(this.userDefinedFile, this.recipes.stream().filter(RecyclingRecipe::isUserDefined).map(this::convertRecipeToJson).collect(Collectors.toCollection(NonNullList::create)));
+    public boolean saveUserDefinedRecipes() {
+        return saveAsJson(this.userDefinedFile, this.recipes.stream().filter(recipe -> recipe.isUserDefined() && Helper.isValidRecipe(recipe)).map(JsonRecyclingRecipe::new).collect(Collectors.toCollection(NonNullList::create)));
     }
 
     public boolean saveAsJson(File file, NonNullList list) {
@@ -420,16 +417,6 @@ public class RecyclingManager {
         return recipe;
     }
 
-    @Nullable
-    public JsonRecyclingRecipe convertRecipeToJson(RecyclingRecipe recipe) {
-        return recipe.getItemRecipe().isEmpty() ? null : new JsonRecyclingRecipe(recipe);
-    }
-
-    @Nullable
-    public JsonRecyclingRecipe convertRecipeToJson(ICraftingRecipe recipe) {
-        return recipe.getRecipeOutput().isEmpty() ? null : new JsonRecyclingRecipe(recipe);
-    }
-
     private void addToCollection(Collection<SimpleStack> list, @Nullable Block block) {
         if (block != null) {
             addToCollection(list, block.asItem());
@@ -443,7 +430,7 @@ public class RecyclingManager {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends IRecipe> RecyclingRecipe convertCraftingRecipe(T iRecipe) {
+    public RecyclingRecipe convertCraftingRecipe(IRecipe iRecipe) {
         NonNullList<Ingredient> ingredients = iRecipe.getIngredients();
         NonNullList<ItemStack> stacks = Helper.mergeStackInList(ingredients.stream().filter(p -> p.getMatchingStacks().length > 0 && !p.getMatchingStacks()[0].isEmpty()).map(m -> m.getMatchingStacks()[0].copy()).collect(Collectors.toCollection(NonNullList::create)));
         RecyclingRecipe recipe = new RecyclingRecipe(new SimpleStack(iRecipe.getRecipeOutput()), stacks.stream().map(SimpleStack::new).collect(Collectors.toCollection(NonNullList::create)));

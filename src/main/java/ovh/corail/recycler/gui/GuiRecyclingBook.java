@@ -5,6 +5,7 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.util.ResourceLocation;
@@ -15,6 +16,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import ovh.corail.recycler.network.PacketHandler;
 import ovh.corail.recycler.network.ServerRecyclingBookMessage;
 import ovh.corail.recycler.network.ServerRecyclingBookMessage.RecyclingBookAction;
+import ovh.corail.recycler.util.Helper;
 import ovh.corail.recycler.util.LangKey;
 
 import static ovh.corail.recycler.ModRecycler.MOD_ID;
@@ -106,7 +108,8 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
     @Override
     public void tick() {
         super.tick();
-        if (getMinecraft().world.getGameTime() % 10 == 0) {
+        ClientWorld world = getMinecraft().world;
+        if (world != null && Helper.atInterval(world.getGameTime(), 10)) {
             String currentText = this.searchBox.getText();
             if (!this.lastText.equals(currentText)) {
                 this.lastText = currentText;
@@ -153,7 +156,7 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
         GlStateManager.pushMatrix();
         GlStateManager.scaled(0.5d, 0.5d, 0.5d);
         // name of the recipe
-        this.container.inventorySlots.stream().filter(p -> p.getSlotIndex() % 10 == 0 && !p.getStack().isEmpty()).forEach(c -> drawString(this.font, c.getStack().getDisplayName().getUnformattedComponentText(), (c.xPos - 2) * 2, (c.yPos - 22) * 2, this.textColor));
+        this.container.inventorySlots.stream().filter(p -> Helper.atInterval(p.getSlotIndex(), 10) && !p.getStack().isEmpty()).forEach(c -> drawString(this.font, c.getStack().getDisplayName().getUnformattedComponentText(), (c.xPos - 2) * 2, (c.yPos - 22) * 2, this.textColor));
         // page number
         this.font.drawStringWithShadow((this.container.getPageNum() + 1) + "/" + (this.container.getPageMax() + 1), 428, 240, this.textColor);
         GlStateManager.popMatrix();

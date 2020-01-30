@@ -12,7 +12,7 @@ import ovh.corail.recycler.block.BlockRecycler;
 import ovh.corail.recycler.registry.ModTriggers;
 import ovh.corail.recycler.tileentity.TileEntityRecycler;
 import ovh.corail.recycler.util.LangKey;
-import ovh.corail.recycler.util.RecyclingManager;
+import ovh.corail.recycler.recipe.RecyclingManager;
 
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
