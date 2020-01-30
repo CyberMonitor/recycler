@@ -5,6 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -34,6 +35,14 @@ public class Helper {
 
     private static boolean isNotFakePlayer(LivingEntity entity) {
         return !(entity instanceof FakePlayer);
+    }
+
+    public static boolean atInterval(long ticksExisted, int tick) {
+        return ticksExisted > 0 && ticksExisted % tick == 0;
+    }
+
+    public static boolean atInterval(World world, int tick) {
+        return atInterval(world.getGameTime(), tick);
     }
 
     public static boolean areItemEqual(ItemStack s1, ItemStack s2) {

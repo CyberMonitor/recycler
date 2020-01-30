@@ -159,7 +159,7 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
             return;
         }
         // autofill the working slots
-        if (this.world.getGameTime() % 10 == 0) {
+        if (Helper.atInterval(this.world, 10)) {
             ItemStack stackToRecycle = this.inventWorking.getStackInSlot(0);
             boolean requireRecipeUpdate = false;
             if (stackToRecycle.isEmpty()) {
@@ -233,10 +233,10 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
             }
             this.countTicks = maxTicks;
             // play working sound
-        } else if (cantRecycleTicks <= 1 && countTicks % 15 == 0) {
-            ModSounds.playSoundAllAround(ModSounds.RECYCLER_WORKING, SoundCategory.BLOCKS, world, pos, 0.5f, 0.5f + world.rand.nextFloat() * 0.5f);
+        } else if (this.cantRecycleTicks <= 1 && Helper.atInterval(this.countTicks, 15)) {
+            ModSounds.playSoundAllAround(ModSounds.RECYCLER_WORKING, SoundCategory.BLOCKS, this.world, this.pos, 0.5f, 0.5f + this.world.rand.nextFloat() * 0.5f);
             for (int i = 0; i < 4; i++) {
-                world.addParticle(ParticleTypes.SMOKE, (double) pos.getX() + Helper.random.nextDouble(), (double) pos.getY() + Helper.random.nextDouble(), (double) pos.getZ() + Helper.random.nextDouble(), 0d, 0d, 0d);
+                this.world.addParticle(ParticleTypes.SMOKE, (double) this.pos.getX() + Helper.random.nextDouble(), (double) this.pos.getY() + Helper.random.nextDouble(), (double) this.pos.getZ() + Helper.random.nextDouble(), 0d, 0d, 0d);
             }
         }
         this.progress = (maxTicks - this.countTicks) * 100 / maxTicks;
