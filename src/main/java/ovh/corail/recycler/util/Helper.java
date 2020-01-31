@@ -38,11 +38,24 @@ public class Helper {
     }
 
     public static boolean atInterval(long ticksExisted, int tick) {
-        return ticksExisted > 0 && ticksExisted % tick == 0;
+        return atInterval(ticksExisted, tick, true);
+    }
+
+    public static boolean atInterval(long ticksExisted, int tick, boolean ignoreZero) {
+        return (!ignoreZero || ticksExisted > 0) && ticksExisted % tick == 0;
     }
 
     public static boolean atInterval(World world, int tick) {
-        return atInterval(world.getGameTime(), tick);
+        return atInterval(world.getGameTime(), tick, true);
+    }
+
+    public static float[] getRGBColor4F(int color) {
+        float[] rgb = new float[4];
+        rgb[0] = (float)(color >> 16 & 255) / 255f;
+        rgb[1] = (float)(color >> 8 & 255) / 255f;
+        rgb[2] = (float)(color & 255) / 255f;
+        rgb[3] = (float)(color >> 24 & 255) / 255f;
+        return rgb;
     }
 
     public static boolean areItemEqual(ItemStack s1, ItemStack s2) {

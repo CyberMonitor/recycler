@@ -5,22 +5,24 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IntReferenceHolder;
+import net.minecraft.util.IIntArray;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import ovh.corail.recycler.registry.ModContainers;
 import ovh.corail.recycler.recipe.RecyclingManager;
 import ovh.corail.recycler.recipe.RecyclingRecipe;
 
 public class ContainerRecyclingBook extends Container {
-    private final IntReferenceHolder pageNum = IntReferenceHolder.single(), pageMax = IntReferenceHolder.single();
+    private final IIntArray recyclingBookData;
+    private int pageNum = 0, pageMax = 0;
+    private int[] recipe_flags = new int[4];
     private final ItemStackHandler BOOK_INVENTORY = new ItemStackHandler(40);
     private String searchText = ""; // the search is server side so in english only
 
     protected ContainerRecyclingBook(ContainerType<? extends ContainerRecyclingBook> containerType, int windowId, PlayerInventory playerInventory) {
         super(containerType, windowId);
-        trackInt(this.pageNum);
-        trackInt(this.pageMax);
+        trackIntArray(this.recyclingBookData = new RecyclingBookData());
         initSlots();
         if (!playerInventory.player.world.isRemote) {
             initPage(0);
@@ -33,13 +35,14 @@ public class ContainerRecyclingBook extends Container {
 
     public void initPage(int pageNum) {
         NonNullList<RecyclingRecipe> recipes = RecyclingManager.instance.getRecipesForSearch(this.searchText);
-        this.pageMax.set(recipes.size() / 4);
-        this.pageNum.set(Math.min(pageNum, this.pageMax.get()));
-        int skipped = this.pageNum.get() * 4;
+        setPageMax(recipes.size() / 4);
+        setPageNum(MathHelper.clamp(pageNum, 0, getPageMax()));
+        int skipped = getPageNum() * 4;
         int slotId = 0;
         int recipeIdMax = Math.min(skipped + 4, recipes.size());
         for (int recipeId = skipped; recipeId < recipeIdMax; recipeId++) {
             RecyclingRecipe recipe = recipes.get(recipeId);
+            this.recyclingBookData.set(recipeId - skipped, (recipe.isUserDefined() ? 1 : 0) + (recipe.isUnbalanced() ? 2 : 0) + (!recipe.isAllowed() ? 4 : 0));
             BOOK_INVENTORY.setStackInSlot(slotId++, recipe.getItemRecipe().asItemStack());
             for (int i = 0; i < 9; i++) {
                 BOOK_INVENTORY.setStackInSlot(slotId++, i < recipe.getCount() ? recipe.getResult(i).asItemStack() : ItemStack.EMPTY);
@@ -56,15 +59,31 @@ public class ContainerRecyclingBook extends Container {
     }
 
     public int getPageNum() {
-        return this.pageNum.get();
+        return this.recyclingBookData.get(4);
     }
 
     public void setPageNum(int num) {
-        this.pageNum.set(num);
+        this.recyclingBookData.set(4, num);
     }
 
     public int getPageMax() {
-        return this.pageMax.get();
+        return this.recyclingBookData.get(5);
+    }
+
+    public void setPageMax(int num) {
+        this.recyclingBookData.set(5, num);
+    }
+
+    public boolean isUserDefinedRecipe(int recipeSquareNum) {
+        return (this.recyclingBookData.get(recipeSquareNum) & 1) != 0;
+    }
+
+    public boolean isUnbalancedRecipe(int recipeSquareNum) {
+        return (this.recyclingBookData.get(recipeSquareNum) & 2) != 0;
+    }
+
+    public boolean isBlacklistRecipe(int recipeSquareNum) {
+        return (this.recyclingBookData.get(recipeSquareNum) & 4) != 0;
     }
 
     @Override
@@ -92,6 +111,60 @@ public class ContainerRecyclingBook extends Container {
                 }
                 startX = 140;
             }
+        }
+    }
+
+    public class RecyclingBookData implements IIntArray {
+
+        @Override
+        public int get(int index) {
+            switch (index) {
+                case 0:
+                    return recipe_flags[0];
+                case 1:
+                    return recipe_flags[1];
+                case 2:
+                    return recipe_flags[2];
+                case 3:
+                    return recipe_flags[3];
+                case 4:
+                    return pageNum;
+                case 5:
+                    return pageMax;
+                default:
+                    return 0;
+            }
+        }
+
+        @Override
+        public void set(int index, int value) {
+            switch (index) {
+                case 0:
+                    recipe_flags[0] = value;
+                    break;
+                case 1:
+                    recipe_flags[1] = value;
+                    break;
+                case 2:
+                    recipe_flags[2] = value;
+                    break;
+                case 3:
+                    recipe_flags[3] = value;
+                    break;
+                case 4:
+                    pageNum = value;
+                    break;
+                case 5:
+                    pageMax = value;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        @Override
+        public int size() {
+            return 6;
         }
     }
 }

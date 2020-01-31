@@ -182,7 +182,8 @@ public class RecyclingManager {
     }
 
     public NonNullList<RecyclingRecipe> getRecipesForSearch(String searchText) {
-        return this.recipes.stream().filter(p -> p.isAllowed() && (ConfigRecycler.general.unbalanced_recipes.get() || !p.isUnbalanced()) && (searchText.isEmpty() || p.getItemRecipe().getTranslation().contains(searchText))).collect(Collectors.toCollection(NonNullList::create));
+        // p.isAllowed() && (ConfigRecycler.general.unbalanced_recipes.get() || !p.isUnbalanced()) &&
+        return this.recipes.stream().filter(p -> (searchText.isEmpty() || p.getItemRecipe().getTranslation().contains(searchText))).collect(Collectors.toCollection(NonNullList::create));
     }
 
     @Nullable

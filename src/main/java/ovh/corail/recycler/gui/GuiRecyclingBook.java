@@ -4,6 +4,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Matrix4f;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.TransformationMatrix;
+import net.minecraft.client.renderer.WorldVertexBufferUploader;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerInventory;
@@ -13,6 +19,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.opengl.GL11;
 import ovh.corail.recycler.network.PacketHandler;
 import ovh.corail.recycler.network.ServerRecyclingBookMessage;
 import ovh.corail.recycler.network.ServerRecyclingBookMessage.RecyclingBookAction;
@@ -146,9 +153,50 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
         // draw slots
         getMinecraft().getTextureManager().bindTexture(TEXTURE_VANILLA_RECYCLER);
         for (Slot slot : this.container.inventorySlots) {
-            blit(this.guiLeft + slot.xPos, this.guiTop + slot.yPos, 112, 222, 16, 16);
+            int startPosX = this.guiLeft + slot.xPos;
+            int startPosY = this.guiTop + slot.yPos;
+            blit(startPosX, startPosY, 112, 222, 16, 16);
+            if (Helper.atInterval(slot.getSlotIndex(), 10, false)) {
+                int recipeId = slot.getSlotIndex() / 10;
+                // TODO tooltip for the squares
+                if (this.container.isUserDefinedRecipe(recipeId)) {
+                    fill(startPosX + 2, startPosY + 16, startPosX + 7, startPosY + 21, 0xff00ff00);
+                }
+                if (this.container.isUnbalancedRecipe(recipeId)) {
+                    fill(startPosX + 8, startPosY + 16, startPosX + 13, startPosY + 21, 0xff501030);
+                }
+            }
         }
-        // TODO icons for blacklist recipe / unbalanced / user defined + allow to show blacklist ones with permission level
+    }
+
+    @Override
+    protected void renderHoveredToolTip(int mouseX, int mouseY) {
+        this.container.inventorySlots.stream().filter(slot -> Helper.atInterval(slot.getSlotIndex(), 10, false) && this.container.isBlacklistRecipe(slot.getSlotIndex() / 10)).forEach(slot -> {
+            int startPosX = this.guiLeft + slot.xPos;
+            int startPosY = this.guiTop + slot.yPos;
+            drawCross(startPosX + 21, startPosY - 16, startPosX + 69, startPosY + 32, 0xffff0000);
+        });
+        super.renderHoveredToolTip(mouseX, mouseY);
+    }
+
+    private void drawCross(float x1, float y1, float x2, float y2, int color) {
+        float[] color4F = Helper.getRGBColor4F(color);
+        Matrix4f matrix4f = TransformationMatrix.identity().getMatrix();
+        BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        bufferbuilder.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+        RenderSystem.lineWidth(2.5f);
+        bufferbuilder.pos(matrix4f, x1, y1, getBlitOffset()).color(color4F[0], color4F[1], color4F[2], color4F[3]).endVertex();
+        bufferbuilder.pos(matrix4f, x2, y2, getBlitOffset()).color(color4F[0], color4F[1], color4F[2], color4F[3]).endVertex();
+        bufferbuilder.pos(matrix4f, x2, y1, getBlitOffset()).color(color4F[0], color4F[1], color4F[2], color4F[3]).endVertex();
+        bufferbuilder.pos(matrix4f, x1, y2, getBlitOffset()).color(color4F[0], color4F[1], color4F[2], color4F[3]).endVertex();
+        bufferbuilder.finishDrawing();
+        WorldVertexBufferUploader.draw(bufferbuilder);
+        RenderSystem.lineWidth(1f);
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
     }
 
     @Override
@@ -156,7 +204,7 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
         RenderSystem.pushMatrix();
         RenderSystem.scaled(0.5d, 0.5d, 0.5d);
         // name of the recipe
-        this.container.inventorySlots.stream().filter(p -> Helper.atInterval(p.getSlotIndex(), 10) && !p.getStack().isEmpty()).forEach(c -> drawString(this.font, c.getStack().getDisplayName().getUnformattedComponentText(), (c.xPos - 2) * 2, (c.yPos - 22) * 2, this.textColor));
+        this.container.inventorySlots.stream().filter(p -> Helper.atInterval(p.getSlotIndex(), 10, false) && !p.getStack().isEmpty()).forEach(c -> drawString(this.font, c.getStack().getDisplayName().getUnformattedComponentText(), (c.xPos - 2) * 2, (c.yPos - 22) * 2, this.textColor));
         // page number
         this.font.drawStringWithShadow((this.container.getPageNum() + 1) + "/" + (this.container.getPageMax() + 1), 428, 240, this.textColor);
         RenderSystem.popMatrix();
