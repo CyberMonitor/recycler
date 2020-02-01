@@ -9,15 +9,14 @@ public class RecyclingRecipe {
     protected final SimpleStack itemRecipe;
     protected boolean isUnbalanced = false;
     protected boolean isUserDefined = false;
-    protected boolean isAllowed = true;
     protected final NonNullList<SimpleStack> itemsList = NonNullList.create();
 
     public RecyclingRecipe(SimpleStack stack) {
         this.itemRecipe = stack;
     }
 
-    public RecyclingRecipe(SimpleStack stack, NonNullList<SimpleStack> stacksOut) {
-        this.itemRecipe = stack;
+    public RecyclingRecipe(SimpleStack stackIn, NonNullList<SimpleStack> stacksOut) {
+        this.itemRecipe = stackIn;
         this.itemsList.addAll(stacksOut);
     }
 
@@ -48,13 +47,12 @@ public class RecyclingRecipe {
         return this.isUserDefined;
     }
 
-    public RecyclingRecipe setAllowed(boolean state) {
-        this.isAllowed = state;
-        return this;
+    public boolean setAllowed(boolean state) {
+        return RecyclingManager.instance.setAllowedRecipe(this, state);
     }
 
     public boolean isAllowed() {
-        return this.isAllowed;
+        return RecyclingManager.instance.isAllowedRecipe(this);
     }
 
     public Integer getCount() {

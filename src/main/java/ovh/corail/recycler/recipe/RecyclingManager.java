@@ -67,15 +67,9 @@ public class RecyclingManager {
 
     public boolean discoverRecipe(ServerWorld world, ItemStack stack) {
         RecyclingRecipe recipe = getRecipe(stack, false);
-        // Recipe already in recycler
+        // recipe already in recycler
         if (recipe != null) {
-            // isn't blacklist
-            if (recipe.isAllowed()) {
-                return false;
-            }
-            recipe.setAllowed(true);
-            saveBlacklist();
-            return true;
+            return recipe.setAllowed(true); // return false if wasn't blacklist
         } else {
             // new recipe added
             recipe = world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(craftingRecipe -> Helper.isValidRecipe(craftingRecipe) && Helper.areItemEqual(craftingRecipe.getRecipeOutput(), stack)).map(this::convertCraftingRecipe).findFirst().orElse(null);
@@ -161,6 +155,24 @@ public class RecyclingManager {
         saveAsJson(this.blacklistFile, this.recipes.stream().filter(p -> !p.isAllowed()).map(recipe -> recipe.getItemRecipe().toString()).collect(Collectors.toCollection(NonNullList::create)));
     }
 
+    public boolean isAllowedRecipe(RecyclingRecipe recipe) {
+        return this.blacklist.stream().noneMatch(stack -> SimpleStack.areItemEqual(stack, recipe.getItemRecipe()));
+    }
+
+    public boolean setAllowedRecipe(RecyclingRecipe recipe, boolean state) {
+        boolean allowed = recipe.isAllowed();
+        if (state != allowed) {
+            if (allowed) {
+                this.blacklist.add(recipe.getItemRecipe());
+            } else {
+                this.blacklist.remove(recipe.getItemRecipe());
+            }
+            saveBlacklist();
+            return true;
+        }
+        return false;
+    }
+
     public RecyclingManager addRecipe(RecyclingRecipe recipe) {
         this.recipes.add(recipe);
         return this;
@@ -177,7 +189,6 @@ public class RecyclingManager {
             return true;
         }
         recipe.setAllowed(false);
-        saveBlacklist();
         return true;
     }
 
@@ -203,7 +214,7 @@ public class RecyclingManager {
         }
         if (checked) {
             // unbalanced recipes
-            if (!ConfigRecycler.general.unbalanced_recipes.get() && recipe.isUnbalanced()) {
+            if (!ConfigRecycler.shared_general.unbalanced_recipes.get() && recipe.isUnbalanced()) {
                 return null;
             }
             // only user defined recipes
@@ -394,7 +405,6 @@ public class RecyclingManager {
                 // check for same existing recipe
                 int foundRecipe = getRecipeIndex(recipe.getItemRecipe());
                 recipe.setUserDefined(true);
-                recipe.setAllowed(this.blacklist.stream().noneMatch(p -> SimpleStack.areItemEqual(p, recipe.getItemRecipe())));
                 if (foundRecipe == -1) {
                     this.recipes.add(recipe);
                 } else {
@@ -437,7 +447,6 @@ public class RecyclingManager {
         RecyclingRecipe recipe = new RecyclingRecipe(new SimpleStack(iRecipe.getRecipeOutput()), stacks.stream().map(SimpleStack::new).collect(Collectors.toCollection(NonNullList::create)));
         recipe.setUnbalanced(false);
         recipe.setUserDefined(true);
-        recipe.setAllowed(true);
         return recipe;
     }
 
