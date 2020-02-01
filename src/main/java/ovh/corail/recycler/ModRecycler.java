@@ -30,7 +30,9 @@ public class ModRecycler {
     @SuppressWarnings("UnstableApiUsage")
     public ModRecycler() {
         Reflection.initialize(PacketHandler.class, ModTriggers.class, ModTabs.class);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigRecycler.GENERAL_SPEC);
+        ModLoadingContext context = ModLoadingContext.get();
+        context.registerConfig(ModConfig.Type.SERVER, ConfigRecycler.SHARED_GENERAL_SPEC);
+        context.registerConfig(ModConfig.Type.COMMON, ConfigRecycler.GENERAL_SPEC);
         MinecraftForge.EVENT_BUS.register(this);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientInit);
     }

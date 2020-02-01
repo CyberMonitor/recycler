@@ -1,13 +1,13 @@
 package ovh.corail.recycler;
 
 import net.minecraftforge.common.ForgeConfigSpec;
+import org.apache.commons.lang3.tuple.Pair;
 
 import static ovh.corail.recycler.ModRecycler.MOD_ID;
 
 public class ConfigRecycler {
 
     public static class General {
-        public final ForgeConfigSpec.ConfigValue<Boolean> unbalanced_recipes;
         public final ForgeConfigSpec.ConfigValue<Boolean> only_user_recipes;
         public final ForgeConfigSpec.ConfigValue<Boolean> recycle_magic_item;
         public final ForgeConfigSpec.ConfigValue<Boolean> recycle_enchanted_book;
@@ -15,14 +15,9 @@ public class ConfigRecycler {
         public final ForgeConfigSpec.ConfigValue<Boolean> allow_sound;
         public final ForgeConfigSpec.ConfigValue<Integer> time_to_recycle;
         public final ForgeConfigSpec.ConfigValue<Boolean> recycle_round_down;
-        public final ForgeConfigSpec.ConfigValue<Boolean> allow_automation;
 
         General(ForgeConfigSpec.Builder builder) {
             builder.push("General");
-            unbalanced_recipes = builder
-                    .comment("unbalanced_recipes [false/true|default:false]")
-                    .translation(getTranslation("unbalanced_recipes"))
-                    .define("unbalanced_recipes", false);
             only_user_recipes = builder
                     .comment("only_user_recipes [false/true|default:false]")
                     .translation(getTranslation("only_user_recipes"))
@@ -51,6 +46,20 @@ public class ConfigRecycler {
                     .comment("recycle_round_down [false/true|default:false]")
                     .translation(getTranslation("recycle_round_down"))
                     .define("recycle_round_down", false);
+            builder.pop();
+        }
+    }
+
+    public static class SharedGeneral {
+        public final ForgeConfigSpec.ConfigValue<Boolean> unbalanced_recipes;
+        public final ForgeConfigSpec.ConfigValue<Boolean> allow_automation;
+
+        SharedGeneral(ForgeConfigSpec.Builder builder) {
+            builder.push("General");
+            unbalanced_recipes = builder
+                    .comment("unbalanced_recipes [false/true|default:false]")
+                    .translation(getTranslation("unbalanced_recipes"))
+                    .define("unbalanced_recipes", false);
             allow_automation = builder
                     .comment("allow_automation [false/true|default:true]")
                     .translation(getTranslation("allow_automation"))
@@ -63,7 +72,15 @@ public class ConfigRecycler {
         return MOD_ID + ".config." + name;
     }
 
-    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    public static final General general = new General(BUILDER);
-    static final ForgeConfigSpec GENERAL_SPEC = BUILDER.build();
+    static final ForgeConfigSpec GENERAL_SPEC, SHARED_GENERAL_SPEC;
+    public static final General general;
+    public static final SharedGeneral shared_general;
+    static {
+        Pair<General, ForgeConfigSpec> confGeneral = new ForgeConfigSpec.Builder().configure(General::new);
+        general = confGeneral.getLeft();
+        GENERAL_SPEC = confGeneral.getRight();
+        Pair<SharedGeneral, ForgeConfigSpec> confSharedGeneral = new ForgeConfigSpec.Builder().configure(SharedGeneral::new);
+        shared_general = confSharedGeneral.getLeft();
+        SHARED_GENERAL_SPEC = confSharedGeneral.getRight();
+    }
 }

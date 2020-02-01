@@ -20,6 +20,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
+import ovh.corail.recycler.ConfigRecycler;
 import ovh.corail.recycler.network.PacketHandler;
 import ovh.corail.recycler.network.ServerRecyclingBookMessage;
 import ovh.corail.recycler.network.ServerRecyclingBookMessage.RecyclingBookAction;
@@ -171,7 +172,10 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
 
     @Override
     protected void renderHoveredToolTip(int mouseX, int mouseY) {
-        this.container.inventorySlots.stream().filter(slot -> Helper.atInterval(slot.getSlotIndex(), 10, false) && this.container.isBlacklistRecipe(slot.getSlotIndex() / 10)).forEach(slot -> {
+        this.container.inventorySlots.stream().filter(slot -> {
+            int recipeId;
+            return Helper.atInterval(slot.getSlotIndex(), 10, false) && (this.container.isBlacklistRecipe((recipeId = slot.getSlotIndex() / 10)) || !ConfigRecycler.shared_general.unbalanced_recipes.get() && this.container.isUnbalancedRecipe(recipeId));
+        }).forEach(slot -> {
             int startPosX = this.guiLeft + slot.xPos;
             int startPosY = this.guiTop + slot.yPos;
             drawCross(startPosX + 21, startPosY - 16, startPosX + 69, startPosY + 32, 0xffff0000);

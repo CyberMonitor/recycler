@@ -46,6 +46,7 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
     private final ItemStackHandler inventVisual = new ItemStackHandler(9); // not serialized
     private final EnergyStorage energyStorage = new EnergyStorage(10000, 20, 10);
 
+    private RecyclingRecipe lastRecipe = null;
     private String customName;
     private boolean isWorking = false;
     private int countTicks = 0, progress = 0, inputMax = 0, cantRecycleTicks = 0;
@@ -195,8 +196,12 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
                 updateRecyclingRecipe();
             }
         }
-        // TODO cache last recipe
-        RecyclingRecipe baseRecipe = RecyclingManager.instance.getRecipe(this.inventWorking.getStackInSlot(0));
+        final RecyclingRecipe baseRecipe;
+        if (this.lastRecipe != null && this.lastRecipe.getItemRecipe().getItem() == this.inventWorking.getStackInSlot(0).getItem()) {
+            baseRecipe = this.lastRecipe;
+        } else {
+            baseRecipe = this.lastRecipe = RecyclingManager.instance.getRecipe(this.inventWorking.getStackInSlot(0));
+        }
         this.inputMax = baseRecipe != null ? this.inventWorking.getStackInSlot(0).getCount() / baseRecipe.getItemRecipe().getCount() : 0;
         if (this.inputMax > 0) {
             this.inputMax = Math.min(this.inputMax, (this.inventWorking.getStackInSlot(1).getMaxDamage() - this.inventWorking.getStackInSlot(1).getDamage()) / 10);
@@ -204,7 +209,7 @@ public class TileEntityRecycler extends TileEntity implements ITickableTileEntit
         if (!this.isWorking) {
             return;
         }
-        if (!ConfigRecycler.general.allow_automation.get()) {
+        if (!ConfigRecycler.shared_general.allow_automation.get()) {
             updateWorking(false);
             return;
         }
