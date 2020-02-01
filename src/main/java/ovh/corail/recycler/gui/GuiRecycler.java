@@ -12,6 +12,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import ovh.corail.recycler.ConfigRecycler;
 import ovh.corail.recycler.network.PacketHandler;
 import ovh.corail.recycler.network.ServerRecyclerMessage;
 import ovh.corail.recycler.network.ServerRecyclerMessage.RecyclerAction;
@@ -137,7 +138,7 @@ public class GuiRecycler extends ContainerScreen<ContainerRecycler> {
         // button recycle
         this.buttons.get(0).active = hasRecipe && this.container.getInputMax() > 0 && !this.container.isWorking();
         // button auto
-        this.buttons.get(1).active = hasRecipe && !this.container.getRecycler().getInventoryWorking().getStackInSlot(1).isEmpty();
+        this.buttons.get(1).active = ConfigRecycler.shared_general.allow_automation.get() && hasRecipe && !this.container.getRecycler().getInventoryWorking().getStackInSlot(1).isEmpty();
         // button take all
         this.buttons.get(2).active = !this.container.getRecycler().isOutputEmpty();
         // button create recipe

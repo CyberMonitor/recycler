@@ -7,17 +7,17 @@ import java.util.Collections;
 @SuppressWarnings({ "WeakerAccess", "UnusedReturnValue" })
 public class RecyclingRecipe {
     protected final SimpleStack itemRecipe;
-    protected boolean isUnbalanced = false;
+    protected Boolean isAllowed = null;
+    protected Boolean isUnbalanced = null;
     protected boolean isUserDefined = false;
-    protected boolean isAllowed = true;
     protected final NonNullList<SimpleStack> itemsList = NonNullList.create();
 
     public RecyclingRecipe(SimpleStack stack) {
         this.itemRecipe = stack;
     }
 
-    public RecyclingRecipe(SimpleStack stack, NonNullList<SimpleStack> stacksOut) {
-        this.itemRecipe = stack;
+    public RecyclingRecipe(SimpleStack stackIn, NonNullList<SimpleStack> stacksOut) {
+        this.itemRecipe = stackIn;
         this.itemsList.addAll(stacksOut);
     }
 
@@ -30,12 +30,15 @@ public class RecyclingRecipe {
         return this.itemRecipe;
     }
 
-    public RecyclingRecipe setUnbalanced(boolean state) {
+    RecyclingRecipe setUnbalanced(boolean state) {
         this.isUnbalanced = state;
         return this;
     }
 
     public boolean isUnbalanced() {
+        if (this.isUnbalanced == null) {
+            this.isUnbalanced = RecyclingManager.instance.isUnbalancedRecipe(this);
+        }
         return this.isUnbalanced;
     }
 
@@ -48,12 +51,15 @@ public class RecyclingRecipe {
         return this.isUserDefined;
     }
 
-    public RecyclingRecipe setAllowed(boolean state) {
+    RecyclingRecipe setAllowed(boolean state) {
         this.isAllowed = state;
         return this;
     }
 
     public boolean isAllowed() {
+        if (this.isAllowed == null) {
+            this.isAllowed = RecyclingManager.instance.isAllowedRecipe(this);
+        }
         return this.isAllowed;
     }
 

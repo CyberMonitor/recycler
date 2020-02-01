@@ -11,17 +11,16 @@ public class JsonRecyclingRecipe {
     final String inputItem;
     final String[] outputItems;
 
-    // TODO merge with recyclingRecipe
-    JsonRecyclingRecipe(String inputItem, String[] outputItems) {
+    public JsonRecyclingRecipe(String inputItem, String[] outputItems) {
         this.inputItem = inputItem;
         this.outputItems = outputItems;
     }
 
-    JsonRecyclingRecipe(SimpleStack input, Collection<SimpleStack> outputs) {
+    public JsonRecyclingRecipe(SimpleStack input, Collection<SimpleStack> outputs) {
         this(input.toString(), outputs.stream().map(SimpleStack::toString).toArray(String[]::new));
     }
 
-    JsonRecyclingRecipe(RecyclingRecipe recipe) {
+    public JsonRecyclingRecipe(RecyclingRecipe recipe) {
         this(recipe.getItemRecipe(), recipe.getResult());
     }
 

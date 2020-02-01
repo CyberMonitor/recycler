@@ -4,6 +4,10 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerInventory;
@@ -13,11 +17,16 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.opengl.GL11;
+import ovh.corail.recycler.ConfigRecycler;
 import ovh.corail.recycler.network.PacketHandler;
 import ovh.corail.recycler.network.ServerRecyclingBookMessage;
 import ovh.corail.recycler.network.ServerRecyclingBookMessage.RecyclingBookAction;
 import ovh.corail.recycler.util.Helper;
 import ovh.corail.recycler.util.LangKey;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static ovh.corail.recycler.ModRecycler.MOD_ID;
 
@@ -28,6 +37,7 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
     private static final ResourceLocation TEXTURE_VANILLA_RECYCLER = new ResourceLocation(MOD_ID + ":textures/gui/vanilla_recycler.png");
     private static final ResourceLocation TEXTURE_RECYCLING_BOOK = new ResourceLocation(MOD_ID + ":textures/gui/book.png");
     private final int textColor = 0xd4af37;
+    private Map<Integer, Rectangle2d> recipeFlags = new HashMap<>();
 
     public GuiRecyclingBook(ContainerRecyclingBook container, PlayerInventory playerInventory, ITextComponent title) {
         super(container, playerInventory, title);
@@ -49,6 +59,15 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
                 PacketHandler.sendToServer(new ServerRecyclingBookMessage(RecyclingBookAction.CHANGE_PAGE, this.container.getPageNum() + 1));
             }
         }));
+        this.recipeFlags.clear();
+        this.container.inventorySlots.stream().filter(slot -> Helper.atInterval(slot.getSlotIndex(), 10, false)).forEach(slot -> {
+            int startPosX = this.guiLeft + slot.xPos;
+            int startPosY = this.guiTop + slot.yPos;
+            int slotId = slot.getSlotIndex() / 10;
+            this.recipeFlags.put(slotId * 3, new Rectangle2d(startPosX, startPosY + 16, 5, 5));
+            this.recipeFlags.put(slotId * 3 + 1, new Rectangle2d(startPosX + 5, startPosY + 16, 5, 5));
+            this.recipeFlags.put(slotId * 3 + 2, new Rectangle2d(startPosX + 10, startPosY + 16, 5, 5));
+        });
         addButton(this.searchBox = new TextFieldWidget(this.font, (this.width / 2) - 32, this.guiTop + 139, 64, 12, "search"));
         configureSearchBox();
     }
@@ -142,13 +161,68 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
         GlStateManager.color4f(1f, 1f, 1f, 1f);
         // recycling book background
         getMinecraft().getTextureManager().bindTexture(TEXTURE_RECYCLING_BOOK);
-        blit(guiLeft, guiTop, 0, 0, xSize, ySize);
+        blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
         // draw slots
         getMinecraft().getTextureManager().bindTexture(TEXTURE_VANILLA_RECYCLER);
         for (Slot slot : this.container.inventorySlots) {
-            blit(this.guiLeft + slot.xPos, this.guiTop + slot.yPos, 112, 222, 16, 16);
+            int startPosX = this.guiLeft + slot.xPos;
+            int startPosY = this.guiTop + slot.yPos;
+            blit(startPosX, startPosY, 112, 222, 16, 16);
+            if (Helper.atInterval(slot.getSlotIndex(), 10, false)) {
+                int recipeId = slot.getSlotIndex() / 10;
+                if (this.container.isUserDefinedRecipe(recipeId)) {
+                    Rectangle2d pos = this.recipeFlags.get(recipeId * 3);
+                    fill(pos.getX(), pos.getY(), pos.getX() + pos.getWidth(), pos.getY() + pos.getHeight(), 0xff0000ff);
+                }
+                if (this.container.isBlacklistRecipe(recipeId)) {
+                    Rectangle2d pos = this.recipeFlags.get(recipeId * 3 + 1);
+                    fill(pos.getX(), pos.getY(), pos.getX() + pos.getWidth(), pos.getY() + pos.getHeight(), 0xff000000);
+                }
+                if (this.container.isUnbalancedRecipe(recipeId)) {
+                    Rectangle2d pos = this.recipeFlags.get(recipeId * 3 + 2);
+                    fill(pos.getX(), pos.getY(), pos.getX() + pos.getWidth(), pos.getY() + pos.getHeight(), 0xff501030);
+                }
+            }
         }
-        // TODO icons for blacklist recipe / unbalanced / user defined + allow to show blacklist ones with permission level
+    }
+
+    @Override
+    protected void renderHoveredToolTip(int mouseX, int mouseY) {
+        this.container.inventorySlots.stream().filter(slot -> {
+            int recipeId;
+            return Helper.atInterval(slot.getSlotIndex(), 10, false) && (this.container.isBlacklistRecipe((recipeId = slot.getSlotIndex() / 10)) || !ConfigRecycler.shared_general.unbalanced_recipes.get() && this.container.isUnbalancedRecipe(recipeId));
+        }).forEach(slot -> {
+            int startPosX = this.guiLeft + slot.xPos;
+            int startPosY = this.guiTop + slot.yPos;
+            drawCross(startPosX + 21, startPosY - 16, startPosX + 69, startPosY + 32, 0xffff0000);
+        });
+        this.recipeFlags.entrySet().stream().filter(p -> p.getValue().contains(mouseX, mouseY)).findFirst().ifPresent(entry -> {
+            int recipeId = entry.getKey() / 3;
+            int type = entry.getKey() % 3;
+            boolean valid = type == 0 ? this.container.isUserDefinedRecipe(recipeId) : type == 1 ? this.container.isBlacklistRecipe(recipeId) : this.container.isUnbalancedRecipe(recipeId);
+            if (valid) {
+                renderTooltip((type == 0 ? "user defined" : type == 1 ? "blacklist" : "unbalanced"), mouseX, mouseY);
+            }
+        });
+        super.renderHoveredToolTip(mouseX, mouseY);
+    }
+
+    private void drawCross(float x1, float y1, float x2, float y2, int color) {
+        float[] color4F = Helper.getRGBColor4F(color);
+        BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture();
+        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        bufferbuilder.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+        GlStateManager.lineWidth(2.5f);
+        bufferbuilder.pos(x1, y1, this.blitOffset).color(color4F[0], color4F[1], color4F[2], color4F[3]).endVertex();
+        bufferbuilder.pos(x2, y2, this.blitOffset).color(color4F[0], color4F[1], color4F[2], color4F[3]).endVertex();
+        bufferbuilder.pos(x2, y1, this.blitOffset).color(color4F[0], color4F[1], color4F[2], color4F[3]).endVertex();
+        bufferbuilder.pos(x1, y2, this.blitOffset).color(color4F[0], color4F[1], color4F[2], color4F[3]).endVertex();
+        Tessellator.getInstance().draw();
+        GlStateManager.lineWidth(1f);
+        GlStateManager.enableTexture();
+        GlStateManager.disableBlend();
     }
 
     @Override
@@ -156,7 +230,7 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
         GlStateManager.pushMatrix();
         GlStateManager.scaled(0.5d, 0.5d, 0.5d);
         // name of the recipe
-        this.container.inventorySlots.stream().filter(p -> Helper.atInterval(p.getSlotIndex(), 10) && !p.getStack().isEmpty()).forEach(c -> drawString(this.font, c.getStack().getDisplayName().getUnformattedComponentText(), (c.xPos - 2) * 2, (c.yPos - 22) * 2, this.textColor));
+        this.container.inventorySlots.stream().filter(p -> Helper.atInterval(p.getSlotIndex(), 10, false) && !p.getStack().isEmpty()).forEach(c -> drawString(this.font, c.getStack().getDisplayName().getUnformattedComponentText(), (c.xPos - 2) * 2, (c.yPos - 22) * 2, this.textColor));
         // page number
         this.font.drawStringWithShadow((this.container.getPageNum() + 1) + "/" + (this.container.getPageMax() + 1), 428, 240, this.textColor);
         GlStateManager.popMatrix();
