@@ -6,6 +6,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Matrix4f;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.TransformationMatrix;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
@@ -27,6 +28,9 @@ import ovh.corail.recycler.network.ServerRecyclingBookMessage.RecyclingBookActio
 import ovh.corail.recycler.util.Helper;
 import ovh.corail.recycler.util.LangKey;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static ovh.corail.recycler.ModRecycler.MOD_ID;
 
 @OnlyIn(Dist.CLIENT)
@@ -36,6 +40,7 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
     private static final ResourceLocation TEXTURE_VANILLA_RECYCLER = new ResourceLocation(MOD_ID + ":textures/gui/vanilla_recycler.png");
     private static final ResourceLocation TEXTURE_RECYCLING_BOOK = new ResourceLocation(MOD_ID + ":textures/gui/book.png");
     private final int textColor = 0xd4af37;
+    private Map<Integer, Rectangle2d> recipeFlags = new HashMap<>();
 
     public GuiRecyclingBook(ContainerRecyclingBook container, PlayerInventory playerInventory, ITextComponent title) {
         super(container, playerInventory, title);
@@ -57,6 +62,15 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
                 PacketHandler.sendToServer(new ServerRecyclingBookMessage(RecyclingBookAction.CHANGE_PAGE, this.container.getPageNum() + 1));
             }
         }));
+        this.recipeFlags.clear();
+        container.inventorySlots.stream().filter(slot -> Helper.atInterval(slot.getSlotIndex(), 10, false)).forEach(slot -> {
+            int startPosX = guiLeft + slot.xPos;
+            int startPosY = guiTop + slot.yPos;
+            int slotId = slot.getSlotIndex() / 10;
+            this.recipeFlags.put(slotId * 3, new Rectangle2d(startPosX, startPosY + 16, 5, 5));
+            this.recipeFlags.put(slotId * 3 + 1, new Rectangle2d(startPosX + 5, startPosY + 16, 5, 5));
+            this.recipeFlags.put(slotId * 3 + 2, new Rectangle2d(startPosX + 10, startPosY + 16, 5, 5));
+        });
         addButton(this.searchBox = new TextFieldWidget(this.font, (this.width / 2) - 32, this.guiTop + 139, 64, 12, "search"));
         configureSearchBox();
     }
@@ -159,12 +173,17 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
             blit(startPosX, startPosY, 112, 222, 16, 16);
             if (Helper.atInterval(slot.getSlotIndex(), 10, false)) {
                 int recipeId = slot.getSlotIndex() / 10;
-                // TODO tooltip for the squares
                 if (this.container.isUserDefinedRecipe(recipeId)) {
-                    fill(startPosX + 2, startPosY + 16, startPosX + 7, startPosY + 21, 0xff00ff00);
+                    Rectangle2d pos = this.recipeFlags.get(recipeId * 3);
+                    fill(pos.getX(), pos.getY(), pos.getX() + pos.getWidth(), pos.getY() + pos.getHeight(), 0xff0000ff);
+                }
+                if (this.container.isBlacklistRecipe(recipeId)) {
+                    Rectangle2d pos = this.recipeFlags.get(recipeId * 3 + 1);
+                    fill(pos.getX(), pos.getY(), pos.getX() + pos.getWidth(), pos.getY() + pos.getHeight(), 0xff000000);
                 }
                 if (this.container.isUnbalancedRecipe(recipeId)) {
-                    fill(startPosX + 8, startPosY + 16, startPosX + 13, startPosY + 21, 0xff501030);
+                    Rectangle2d pos = this.recipeFlags.get(recipeId * 3 + 2);
+                    fill(pos.getX(), pos.getY(), pos.getX() + pos.getWidth(), pos.getY() + pos.getHeight(), 0xff501030);
                 }
             }
         }
@@ -179,6 +198,10 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
             int startPosX = this.guiLeft + slot.xPos;
             int startPosY = this.guiTop + slot.yPos;
             drawCross(startPosX + 21, startPosY - 16, startPosX + 69, startPosY + 32, 0xffff0000);
+        });
+        this.recipeFlags.entrySet().stream().filter(p -> p.getValue().contains(mouseX, mouseY)).findFirst().ifPresent(entry -> {
+            int type = entry.getKey() % 3;
+            renderTooltip((type == 0 ? "user defined" : type == 1 ? "blacklist" : "unbalanced"), mouseX, mouseY);
         });
         super.renderHoveredToolTip(mouseX, mouseY);
     }
