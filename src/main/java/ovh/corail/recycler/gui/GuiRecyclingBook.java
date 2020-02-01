@@ -200,8 +200,12 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
             drawCross(startPosX + 21, startPosY - 16, startPosX + 69, startPosY + 32, 0xffff0000);
         });
         this.recipeFlags.entrySet().stream().filter(p -> p.getValue().contains(mouseX, mouseY)).findFirst().ifPresent(entry -> {
+            int recipeId = entry.getKey() / 3;
             int type = entry.getKey() % 3;
-            renderTooltip((type == 0 ? "user defined" : type == 1 ? "blacklist" : "unbalanced"), mouseX, mouseY);
+            boolean valid = type == 0 ? this.container.isUserDefinedRecipe(recipeId) : type == 1 ? this.container.isBlacklistRecipe(recipeId) : this.container.isUnbalancedRecipe(recipeId);
+            if (valid) {
+                renderTooltip((type == 0 ? "user defined" : type == 1 ? "blacklist" : "unbalanced"), mouseX, mouseY);
+            }
         });
         super.renderHoveredToolTip(mouseX, mouseY);
     }
