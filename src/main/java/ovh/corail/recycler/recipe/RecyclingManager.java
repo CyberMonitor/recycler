@@ -218,7 +218,7 @@ public class RecyclingManager {
     }
 
     public NonNullList<RecyclingRecipe> getRecipesForSearch(String searchText) {
-        return searchText.isEmpty() ? this.recipes : this.recipes.stream().filter(p -> p.getItemRecipe().getTranslation().contains(searchText)).collect(Collectors.toCollection(NonNullList::create));
+        return this.recipes.stream().filter(recipe -> (searchText.isEmpty() || recipe.getItemRecipe().getTranslation().contains(searchText)) && (!ConfigRecycler.general.only_user_recipes.get() || recipe.isUserDefined())).collect(Collectors.toCollection(NonNullList::create));
     }
 
     @Nullable
