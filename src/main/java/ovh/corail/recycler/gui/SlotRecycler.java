@@ -38,7 +38,7 @@ public class SlotRecycler extends SlotItemHandler {
 
     @Override
     public void onSlotChanged() {
-        timeInUse = 40;
+        this.timeInUse = 40;
         super.onSlotChanged();
     }
 }

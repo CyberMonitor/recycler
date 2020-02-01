@@ -1,0 +1,6 @@
+{
+"type":"crafting_shaped",
+"pattern":[" 0 ","010"," 0 "],
+"key":{"0":{"tag": "forge:nuggets/iron"},"1":{"tag": "forge:ingots/iron"}},
+"result":{"item":"corail_recycler:steel_disk"}
+}

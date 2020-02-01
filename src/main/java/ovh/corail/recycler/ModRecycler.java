@@ -15,8 +15,10 @@ import org.apache.logging.log4j.Logger;
 import ovh.corail.recycler.command.CommandRecycler;
 import ovh.corail.recycler.gui.GuiRecycler;
 import ovh.corail.recycler.gui.GuiRecyclingBook;
+import ovh.corail.recycler.item.ItemDisk;
 import ovh.corail.recycler.network.PacketHandler;
 import ovh.corail.recycler.registry.ModContainers;
+import ovh.corail.recycler.registry.ModItems;
 import ovh.corail.recycler.registry.ModTabs;
 import ovh.corail.recycler.registry.ModTriggers;
 import ovh.corail.recycler.recipe.RecyclingManager;
@@ -47,5 +49,6 @@ public class ModRecycler {
     private void clientInit(final FMLClientSetupEvent event) {
         ScreenManager.registerFactory(ModContainers.RECYCLER, GuiRecycler::new);
         ScreenManager.registerFactory(ModContainers.RECYCLING_BOOK, GuiRecyclingBook::new);
+        event.getMinecraftSupplier().get().getItemColors().register(ItemDisk::getColor, ModItems.diamond_disk, ModItems.steel_disk);
     }
 }

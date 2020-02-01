@@ -10,4 +10,5 @@ import static ovh.corail.recycler.ModRecycler.MOD_ID;
 public class ModItems {
     public final static Item diamond_shard = Items.AIR;
     public final static Item diamond_disk = Items.AIR;
+    public final static Item steel_disk = Items.AIR;
 }

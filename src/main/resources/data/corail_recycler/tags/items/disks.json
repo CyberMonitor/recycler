@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "corail_recycler:diamond_disk"
+    "corail_recycler:diamond_disk",
+    "corail_recycler:steel_disk"
   ]
 }

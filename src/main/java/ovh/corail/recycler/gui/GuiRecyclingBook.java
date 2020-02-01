@@ -63,9 +63,9 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
             }
         }));
         this.recipeFlags.clear();
-        container.inventorySlots.stream().filter(slot -> Helper.atInterval(slot.getSlotIndex(), 10, false)).forEach(slot -> {
-            int startPosX = guiLeft + slot.xPos;
-            int startPosY = guiTop + slot.yPos;
+        this.container.inventorySlots.stream().filter(slot -> Helper.atInterval(slot.getSlotIndex(), 10, false)).forEach(slot -> {
+            int startPosX = this.guiLeft + slot.xPos;
+            int startPosY = this.guiTop + slot.yPos;
             int slotId = slot.getSlotIndex() / 10;
             this.recipeFlags.put(slotId * 3, new Rectangle2d(startPosX, startPosY + 16, 5, 5));
             this.recipeFlags.put(slotId * 3 + 1, new Rectangle2d(startPosX + 5, startPosY + 16, 5, 5));
@@ -164,7 +164,7 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
         RenderSystem.color4f(1f, 1f, 1f, 1f);
         // recycling book background
         getMinecraft().getTextureManager().bindTexture(TEXTURE_RECYCLING_BOOK);
-        blit(guiLeft, guiTop, 0, 0, xSize, ySize);
+        blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
         // draw slots
         getMinecraft().getTextureManager().bindTexture(TEXTURE_VANILLA_RECYCLER);
         for (Slot slot : this.container.inventorySlots) {

@@ -3,6 +3,7 @@ package ovh.corail.recycler.recipe;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
 import net.minecraft.util.NonNullList;
+import ovh.corail.recycler.registry.ModItems;
 
 class RecipeLoaderHelper {
     static void loadDefaultRecipes(NonNullList<RecyclingRecipe> recipes) {
@@ -10,6 +11,7 @@ class RecipeLoaderHelper {
         recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.BEEHIVE), new SimpleStack[] { new SimpleStack(Blocks.BIRCH_PLANKS, 6), new SimpleStack(Items.HONEYCOMB, 3) }));
         recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.HONEY_BLOCK), new SimpleStack[] { new SimpleStack(Items.HONEY_BOTTLE, 4) }));
         recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.HONEYCOMB_BLOCK), new SimpleStack[] { new SimpleStack(Items.HONEYCOMB, 4) }));
+        recipes.add(new RecyclingRecipe(new SimpleStack(Items.DIAMOND), new SimpleStack[] { new SimpleStack(ModItems.diamond_shard, 9) }));
         // added in 1.14.4
         recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.SMOOTH_RED_SANDSTONE_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.SMOOTH_RED_SANDSTONE, 3) }));
         recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.POLISHED_ANDESITE_STAIRS, 2), new SimpleStack[] { new SimpleStack(Blocks.POLISHED_ANDESITE, 3) }));
