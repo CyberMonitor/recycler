@@ -4,8 +4,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
 import net.minecraft.util.NonNullList;
 
-public class RecipeLoaderHelper {
-    public static void loadDefaultRecipes(NonNullList<RecyclingRecipe> recipes) {
+class RecipeLoaderHelper {
+    static void loadDefaultRecipes(NonNullList<RecyclingRecipe> recipes) {
         // 1.15
         recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.BEEHIVE), new SimpleStack[] { new SimpleStack(Blocks.BIRCH_PLANKS, 6), new SimpleStack(Items.HONEYCOMB, 3) }));
         recipes.add(new RecyclingRecipe(new SimpleStack(Blocks.HONEY_BLOCK), new SimpleStack[] { new SimpleStack(Items.HONEY_BOTTLE, 4) }));

@@ -69,7 +69,7 @@ public class RecyclingManager {
         RecyclingRecipe recipe = getRecipe(stack, false);
         // recipe already in recycler
         if (recipe != null) {
-            return setAllowedRecipe(recipe, true); // return false if wasn't blacklist
+            return setAllowedRecipe(recipe, true) || (!ConfigRecycler.shared_general.unbalanced_recipes.get() && setUnbalancedRecipe(recipe, false));
         } else {
             // new recipe added
             recipe = world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(craftingRecipe -> Helper.isValidRecipe(craftingRecipe) && Helper.areItemEqual(craftingRecipe.getRecipeOutput(), stack)).map(this::convertCraftingRecipe).findFirst().orElse(null);
@@ -126,7 +126,7 @@ public class RecyclingManager {
             addToCollection(this.unbalanced, Blocks.RED_NETHER_BRICKS);
             addToCollection(this.unbalanced, Blocks.MAGMA_BLOCK);
             addToCollection(this.unbalanced, Blocks.GRANITE);
-            saveAsJson(this.unbalancedFile, this.unbalanced.stream().map(SimpleStack::toString).collect(Collectors.toCollection(NonNullList::create)));
+            saveUnbalanced();
         } else {
             loadAsJson(this.unbalancedFile, String.class).forEach(jsonString -> {
                 SimpleStack currentStack = SimpleStack.fromJson(jsonString);
@@ -140,7 +140,7 @@ public class RecyclingManager {
     private void loadBlacklist() {
         if (!this.blacklistFile.exists()) {
             addToCollection(this.blacklist, ModBlocks.recycler);
-            saveAsJson(this.blacklistFile, this.blacklist.stream().map(SimpleStack::toString).collect(Collectors.toCollection(NonNullList::create)));
+            saveBlacklist();
         } else {
             loadAsJson(this.blacklistFile, String.class).forEach(jsonString -> {
                 SimpleStack currentStack = SimpleStack.fromJson(jsonString);
@@ -152,7 +152,7 @@ public class RecyclingManager {
     }
 
     private void saveBlacklist() {
-        saveAsJson(this.blacklistFile, this.recipes.stream().filter(p -> !p.isAllowed()).map(recipe -> recipe.getItemRecipe().toString()).collect(Collectors.toCollection(NonNullList::create)));
+        saveAsJson(this.blacklistFile, this.blacklist.stream().map(SimpleStack::toString).collect(Collectors.toCollection(NonNullList::create)));
     }
 
     public boolean isAllowedRecipe(RecyclingRecipe recipe) {
@@ -174,6 +174,29 @@ public class RecyclingManager {
         return false;
     }
 
+    private void saveUnbalanced() {
+        saveAsJson(this.unbalancedFile, this.unbalanced.stream().map(SimpleStack::toString).collect(Collectors.toCollection(NonNullList::create)));
+    }
+
+    public boolean isUnbalancedRecipe(RecyclingRecipe recipe) {
+        return this.unbalanced.stream().anyMatch(stack -> SimpleStack.areItemEqual(stack, recipe.getItemRecipe()));
+    }
+
+    public boolean setUnbalancedRecipe(RecyclingRecipe recipe, boolean state) {
+        boolean allowed = isUnbalancedRecipe(recipe);
+        recipe.setUnbalanced(state);
+        if (state != allowed) {
+            if (allowed) {
+                this.unbalanced.remove(recipe.getItemRecipe());
+            } else {
+                this.unbalanced.add(recipe.getItemRecipe());
+            }
+            saveUnbalanced();
+            return true;
+        }
+        return false;
+    }
+
     public RecyclingManager addRecipe(RecyclingRecipe recipe) {
         this.recipes.add(recipe);
         return this;
@@ -190,6 +213,7 @@ public class RecyclingManager {
             return true;
         }
         setAllowedRecipe(recipe, false);
+        setUnbalancedRecipe(recipe, false);
         return true;
     }
 
@@ -424,7 +448,6 @@ public class RecyclingManager {
         }
         RecyclingRecipe recipe = new RecyclingRecipe(inputItem);
         Arrays.stream(jRecipe.outputItems).map(SimpleStack::fromJson).filter(outputItem -> !outputItem.isEmpty()).forEach(recipe::addStack);
-        recipe.setUnbalanced(this.unbalanced.stream().anyMatch(p -> SimpleStack.areItemEqual(p, recipe.getItemRecipe())));
         return recipe;
     }
 
@@ -445,7 +468,6 @@ public class RecyclingManager {
         NonNullList<Ingredient> ingredients = iRecipe.getIngredients();
         NonNullList<ItemStack> stacks = Helper.mergeStackInList(ingredients.stream().filter(p -> p.getMatchingStacks().length > 0 && !p.getMatchingStacks()[0].isEmpty()).map(m -> m.getMatchingStacks()[0].copy()).collect(Collectors.toCollection(NonNullList::create)));
         RecyclingRecipe recipe = new RecyclingRecipe(new SimpleStack(iRecipe.getRecipeOutput()), stacks.stream().map(SimpleStack::new).collect(Collectors.toCollection(NonNullList::create)));
-        recipe.setUnbalanced(false);
         recipe.setUserDefined(true);
         return recipe;
     }

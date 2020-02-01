@@ -8,7 +8,7 @@ import java.util.Collections;
 public class RecyclingRecipe {
     protected final SimpleStack itemRecipe;
     protected Boolean isAllowed = null;
-    protected boolean isUnbalanced = false;
+    protected Boolean isUnbalanced = null;
     protected boolean isUserDefined = false;
     protected final NonNullList<SimpleStack> itemsList = NonNullList.create();
 
@@ -36,6 +36,9 @@ public class RecyclingRecipe {
     }
 
     public boolean isUnbalanced() {
+        if (this.isUnbalanced == null) {
+            this.isUnbalanced = RecyclingManager.instance.isUnbalancedRecipe(this);
+        }
         return this.isUnbalanced;
     }
 
