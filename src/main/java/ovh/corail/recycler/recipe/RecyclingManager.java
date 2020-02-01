@@ -69,7 +69,7 @@ public class RecyclingManager {
         RecyclingRecipe recipe = getRecipe(stack, false);
         // recipe already in recycler
         if (recipe != null) {
-            return recipe.setAllowed(true); // return false if wasn't blacklist
+            return setAllowedRecipe(recipe, true); // return false if wasn't blacklist
         } else {
             // new recipe added
             recipe = world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(craftingRecipe -> Helper.isValidRecipe(craftingRecipe) && Helper.areItemEqual(craftingRecipe.getRecipeOutput(), stack)).map(this::convertCraftingRecipe).findFirst().orElse(null);
@@ -160,7 +160,8 @@ public class RecyclingManager {
     }
 
     public boolean setAllowedRecipe(RecyclingRecipe recipe, boolean state) {
-        boolean allowed = recipe.isAllowed();
+        boolean allowed = isAllowedRecipe(recipe);
+        recipe.setAllowed(state);
         if (state != allowed) {
             if (allowed) {
                 this.blacklist.add(recipe.getItemRecipe());
@@ -188,13 +189,12 @@ public class RecyclingManager {
             saveUserDefinedRecipes();
             return true;
         }
-        recipe.setAllowed(false);
+        setAllowedRecipe(recipe, false);
         return true;
     }
 
     public NonNullList<RecyclingRecipe> getRecipesForSearch(String searchText) {
-        // p.isAllowed() && (ConfigRecycler.general.unbalanced_recipes.get() || !p.isUnbalanced()) &&
-        return this.recipes.stream().filter(p -> (searchText.isEmpty() || p.getItemRecipe().getTranslation().contains(searchText))).collect(Collectors.toCollection(NonNullList::create));
+        return searchText.isEmpty() ? this.recipes : this.recipes.stream().filter(p -> p.getItemRecipe().getTranslation().contains(searchText)).collect(Collectors.toCollection(NonNullList::create));
     }
 
     @Nullable

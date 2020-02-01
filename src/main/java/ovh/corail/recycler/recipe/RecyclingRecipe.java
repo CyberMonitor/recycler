@@ -7,6 +7,7 @@ import java.util.Collections;
 @SuppressWarnings({ "WeakerAccess", "UnusedReturnValue" })
 public class RecyclingRecipe {
     protected final SimpleStack itemRecipe;
+    protected Boolean isAllowed = null;
     protected boolean isUnbalanced = false;
     protected boolean isUserDefined = false;
     protected final NonNullList<SimpleStack> itemsList = NonNullList.create();
@@ -29,7 +30,7 @@ public class RecyclingRecipe {
         return this.itemRecipe;
     }
 
-    public RecyclingRecipe setUnbalanced(boolean state) {
+    RecyclingRecipe setUnbalanced(boolean state) {
         this.isUnbalanced = state;
         return this;
     }
@@ -47,12 +48,16 @@ public class RecyclingRecipe {
         return this.isUserDefined;
     }
 
-    public boolean setAllowed(boolean state) {
-        return RecyclingManager.instance.setAllowedRecipe(this, state);
+    RecyclingRecipe setAllowed(boolean state) {
+        this.isAllowed = state;
+        return this;
     }
 
     public boolean isAllowed() {
-        return RecyclingManager.instance.isAllowedRecipe(this);
+        if (this.isAllowed == null) {
+            this.isAllowed = RecyclingManager.instance.isAllowedRecipe(this);
+        }
+        return this.isAllowed;
     }
 
     public Integer getCount() {
