@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.ItemArgument;
@@ -15,6 +14,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.StringTextComponent;
 import ovh.corail.recycler.recipe.JsonRecyclingRecipe;
@@ -24,6 +24,7 @@ import ovh.corail.recycler.recipe.SimpleStack;
 import ovh.corail.recycler.util.Helper;
 import ovh.corail.recycler.util.LangKey;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.stream.Collectors;
 
@@ -83,17 +84,17 @@ public class CommandRecycler {
         return 1;
     }
 
-    private int showUsage(CommandSource source) {
-        source.sendFeedback(new StringTextComponent("recycler <command>"), false);
-        source.sendFeedback(new StringTextComponent("discover_recipe : add the recycling recipe of the crafting result of the item hold in main hand"), false);
-        source.sendFeedback(new StringTextComponent("remove_recipe : remove the recycling recipe of the item hold in main hand"), false);
-        source.sendFeedback(new StringTextComponent("export_crafting_recipes : save the list of all crafting recipes in \"recycling\" format in the config directory"), false);
-        source.sendFeedback(new StringTextComponent("add_recipe : add a custom recipe based on the ingredient and results provided in param <item> <count>"), false);
+    private int showUsage(CommandContext<CommandSource> context) {
+        context.getSource().sendFeedback(new StringTextComponent("recycler <command>"), false);
+        context.getSource().sendFeedback(new StringTextComponent("discover_recipe : add the recycling recipe of the crafting result of the item hold in main hand"), false);
+        context.getSource().sendFeedback(new StringTextComponent("remove_recipe : remove the recycling recipe of the item hold in main hand"), false);
+        context.getSource().sendFeedback(new StringTextComponent("export_crafting_recipes : save the list of all crafting recipes in \"recycling\" format in the config directory"), false);
+        context.getSource().sendFeedback(new StringTextComponent("add_recipe : add a custom recipe based on the ingredient and results provided in param <item> <count>"), false);
         return 1;
     }
 
     public void registerCommand() {
-        LiteralArgumentBuilder<CommandSource> createRecipeBuilder = Commands.literal("create_recipe").executes(c -> showUsage(c.getSource()));
+        LiteralArgumentBuilder<CommandSource> createRecipeBuilder = Commands.literal(CommandAction.ADD_RECIPE.getName()).executes(this::showUsage);
         createRecipeBuilder.then(createItemArgument("ing").then(createIntegerArgument("ingc", null)
             .then(createItemArgument("r1").then(createIntegerArgument("r1c", c -> processAddRecipe(c.getSource(), createStack(c, "ing"), createStack(c, "r1")))
                 .then(createItemArgument("r2").then(createIntegerArgument("r2c", c -> processAddRecipe(c.getSource(), createStack(c, "ing"), createStack(c, "r1"), createStack(c, "r2")))
@@ -106,24 +107,33 @@ public class CommandRecycler {
                                             .then(createItemArgument("r9").then(createIntegerArgument("r9c", c -> processAddRecipe(c.getSource(), createStack(c, "ing"), createStack(c, "r1"), createStack(c, "r2"), createStack(c, "r3"), createStack(c, "r4"), createStack(c, "r5"), createStack(c, "r6"), createStack(c, "r7"), createStack(c, "r8"), createStack(c, "r9")))
         ))))))))))))))))))));
         this.commandDispatcher.register(Commands.literal("recycler").requires(p -> p.hasPermissionLevel(2))
-            .executes(c -> showUsage(c.getSource()))
-            .then(Commands.literal("discover_recipe").executes(c -> processDiscoverRecipe(c.getSource(), ItemStack.EMPTY))
+            .executes(this::showUsage)
+            .then(Commands.literal(CommandAction.DISCOVER_RECIPE.getName()).executes(c -> processDiscoverRecipe(c.getSource(), ItemStack.EMPTY))
                 .then(Commands.argument("item", ItemArgument.item()).executes(c -> processDiscoverRecipe(c.getSource(), ItemArgument.getItem(c, "item").createStack(1, false))))
-            ).then(Commands.literal("remove_recipe").executes(c -> processRemoveRecipe(c.getSource(), ItemStack.EMPTY))
+            ).then(Commands.literal(CommandAction.REMOVE_RECIPE.getName()).executes(c -> processRemoveRecipe(c.getSource(), ItemStack.EMPTY))
                 .then(Commands.argument("item", ItemArgument.item()).executes(c -> processRemoveRecipe(c.getSource(), ItemArgument.getItem(c, "item").createStack(1, false))))
-            ).then(Commands.literal("export_crafting_recipes").executes(c -> processExportCraftingRecipes(c.getSource()))
+            ).then(Commands.literal(CommandAction.EXPORT_CRAFTING_RECIPES.getName()).executes(c -> processExportCraftingRecipes(c.getSource()))
             ).then(createRecipeBuilder));
     }
 
     private RequiredArgumentBuilder<CommandSource, ItemInput> createItemArgument(String itemName) {
-        return Commands.argument(itemName, ItemArgument.item()).executes(c -> showUsage(c.getSource()));
+        return Commands.argument(itemName, ItemArgument.item()).executes(this::showUsage);
     }
 
-    private RequiredArgumentBuilder<CommandSource, Integer> createIntegerArgument(String intName, Command<CommandSource> action) {
-        return Commands.argument(intName, IntegerArgumentType.integer()).executes(action == null ? c -> showUsage(c.getSource()) : action);
+    private RequiredArgumentBuilder<CommandSource, Integer> createIntegerArgument(String intName, @Nullable Command<CommandSource> action) {
+        return Commands.argument(intName, IntegerArgumentType.integer()).executes(action == null ? this::showUsage : action);
     }
 
     private SimpleStack createStack(CommandContext<CommandSource> context, String name) {
         return new SimpleStack(ItemArgument.getItem(context, name).getItem(), IntegerArgumentType.getInteger(context, name + "c"));
+    }
+
+    private enum CommandAction implements IStringSerializable {
+        DISCOVER_RECIPE, REMOVE_RECIPE, EXPORT_CRAFTING_RECIPES, ADD_RECIPE;
+
+        @Override
+        public String getName() {
+            return name().toLowerCase();
+        }
     }
 }

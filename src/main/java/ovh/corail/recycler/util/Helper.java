@@ -2,6 +2,7 @@ package ovh.corail.recycler.util;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
@@ -66,8 +67,8 @@ public class Helper {
         return recipe != null && !recipe.getResult().isEmpty() && !recipe.getItemRecipe().isEmpty();
     }
 
-    public static boolean isValidRecipe(@Nullable IRecipe recipe) {
-        return recipe != null && !recipe.getIngredients().isEmpty() && !recipe.getRecipeOutput().isEmpty();
+    public static boolean isValidRecipe(@Nullable IRecipe<CraftingInventory> recipe) {
+        return recipe != null && !recipe.getIngredients().isEmpty() && !recipe.getRecipeOutput().isEmpty() && recipe.getIngredients().stream().allMatch(ingredient -> ingredient.getMatchingStacks().length > 0);
     }
 
     public static NonNullList<ItemStack> mergeStackInList(NonNullList<ItemStack> list) {
