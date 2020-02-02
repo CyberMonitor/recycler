@@ -182,6 +182,7 @@ public class GuiRecyclingBook extends ContainerScreen<ContainerRecyclingBook> {
                     Rectangle2d pos = this.recipeFlags.get(recipeId * 3 + 2);
                     fill(pos.getX(), pos.getY(), pos.getX() + pos.getWidth(), pos.getY() + pos.getHeight(), 0xff501030);
                 }
+                GlStateManager.color4f(1f, 1f, 1f, 1f);
             }
         }
     }
