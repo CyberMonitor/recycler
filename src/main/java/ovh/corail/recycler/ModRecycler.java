@@ -45,6 +45,7 @@ public class ModRecycler {
         context.registerConfig(ModConfig.Type.COMMON, ConfigRecycler.GENERAL_SPEC);
         MinecraftForge.EVENT_BUS.register(this);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientInit);
+        PROXY.preInit();
     }
 
     private void registerSharedConfig(ModContainer modContainer) {
