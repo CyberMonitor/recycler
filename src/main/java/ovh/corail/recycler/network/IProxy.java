@@ -1,5 +1,6 @@
 package ovh.corail.recycler.network;
 
 public interface IProxy {
-    void updateConfig();
+    void updateConfigIfDirty();
+    void markConfigDirty();
 }

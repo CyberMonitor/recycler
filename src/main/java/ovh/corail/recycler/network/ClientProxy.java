@@ -2,6 +2,10 @@ package ovh.corail.recycler.network;
 
 public class ClientProxy implements IProxy {
     @Override
-    public void updateConfig() {
+    public void updateConfigIfDirty() {
+    }
+
+    @Override
+    public void markConfigDirty() {
     }
 }
