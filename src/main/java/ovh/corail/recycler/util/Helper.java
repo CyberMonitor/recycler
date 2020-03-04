@@ -8,6 +8,8 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import ovh.corail.recycler.recipe.RecyclingRecipe;
@@ -141,6 +143,14 @@ public class Helper {
             }
         }
         return minCount <= 0;
+    }
+
+    public static boolean isPacketToClient(NetworkEvent.Context ctx) {
+        return ctx.getDirection().getOriginationSide() == LogicalSide.SERVER && ctx.getDirection().getReceptionSide() == LogicalSide.CLIENT;
+    }
+
+    public static boolean isPacketToServer(NetworkEvent.Context ctx) {
+        return ctx.getDirection().getOriginationSide() == LogicalSide.CLIENT && ctx.getDirection().getReceptionSide() == LogicalSide.SERVER;
     }
 
     @SuppressWarnings("all")

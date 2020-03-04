@@ -12,6 +12,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkHooks;
 import ovh.corail.recycler.gui.ContainerRecyclingBook;
 import ovh.corail.recycler.registry.ModTriggers;
+import ovh.corail.recycler.util.Helper;
 
 import java.util.function.Supplier;
 
@@ -56,39 +57,42 @@ public class ServerRecyclingBookMessage {
     }
 
     static class Handler {
-        static void handle(final ServerRecyclingBookMessage message, Supplier<NetworkEvent.Context> ctx) {
-            ctx.get().enqueueWork(() -> {
-                ServerPlayerEntity player = ctx.get().getSender();
-                if (player != null) {
-                    switch (message.action) {
-                        case RECYCLING_BOOK:
-                            ModTriggers.READ_RECYCLING_BOOK.trigger(player);
-                            NetworkHooks.openGui(player, new INamedContainerProvider() {
-                                @Override
-                                public ITextComponent getDisplayName() {
-                                    return new TranslationTextComponent(MOD_ID + ".message.recycling_book");
-                                }
+        static void handle(final ServerRecyclingBookMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
+            NetworkEvent.Context ctx = contextSupplier.get();
+            if (Helper.isPacketToServer(ctx)) {
+                ctx.enqueueWork(() -> {
+                    ServerPlayerEntity player = ctx.getSender();
+                    if (player != null) {
+                        switch (message.action) {
+                            case RECYCLING_BOOK:
+                                ModTriggers.READ_RECYCLING_BOOK.trigger(player);
+                                NetworkHooks.openGui(player, new INamedContainerProvider() {
+                                    @Override
+                                    public ITextComponent getDisplayName() {
+                                        return new TranslationTextComponent(MOD_ID + ".message.recycling_book");
+                                    }
 
-                                @Override
-                                public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) {
-                                    return new ContainerRecyclingBook(windowId, playerInventory);
+                                    @Override
+                                    public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) {
+                                        return new ContainerRecyclingBook(windowId, playerInventory);
+                                    }
+                                });
+                                break;
+                            case CHANGE_PAGE:
+                                if (player.openContainer instanceof ContainerRecyclingBook) {
+                                    ((ContainerRecyclingBook) player.openContainer).initPage(message.pageNum);
                                 }
-                            });
-                            break;
-                        case CHANGE_PAGE:
-                            if (player.openContainer instanceof ContainerRecyclingBook) {
-                                ((ContainerRecyclingBook) player.openContainer).initPage(message.pageNum);
-                            }
-                            break;
-                        case SEARCH_TEXT:
-                            if (player.openContainer instanceof ContainerRecyclingBook) {
-                                ((ContainerRecyclingBook) player.openContainer).updateSearchText(message.searchText);
-                            }
-                            break;
+                                break;
+                            case SEARCH_TEXT:
+                                if (player.openContainer instanceof ContainerRecyclingBook) {
+                                    ((ContainerRecyclingBook) player.openContainer).updateSearchText(message.searchText);
+                                }
+                                break;
+                        }
                     }
-                }
-            });
-            ctx.get().setPacketHandled(true);
+                });
+            }
+            ctx.setPacketHandled(true);
         }
     }
 }

@@ -21,7 +21,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
-import ovh.corail.recycler.ConfigRecycler;
+import ovh.corail.recycler.config.ConfigRecycler;
 import ovh.corail.recycler.network.PacketHandler;
 import ovh.corail.recycler.network.ServerRecyclingBookMessage;
 import ovh.corail.recycler.network.ServerRecyclingBookMessage.RecyclingBookAction;

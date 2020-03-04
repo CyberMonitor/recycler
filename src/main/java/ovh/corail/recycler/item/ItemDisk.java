@@ -28,7 +28,7 @@ public class ItemDisk extends ItemGeneric {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
-        tooltip.add(LangKey.makeTranslationWithStyle(StyleType.TOOLTIP_DESC, MOD_ID + ".item." + name + ".desc"));
+        tooltip.add(LangKey.makeTranslationWithStyle(StyleType.TOOLTIP_DESC, MOD_ID + ".item.disk.desc"));
     }
 
     @Override

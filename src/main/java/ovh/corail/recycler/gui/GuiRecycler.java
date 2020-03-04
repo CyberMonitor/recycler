@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import ovh.corail.recycler.ConfigRecycler;
+import ovh.corail.recycler.config.ConfigRecycler;
 import ovh.corail.recycler.network.PacketHandler;
 import ovh.corail.recycler.network.ServerRecyclerMessage;
 import ovh.corail.recycler.network.ServerRecyclerMessage.RecyclerAction;
@@ -81,8 +81,7 @@ public class GuiRecycler extends ContainerScreen<ContainerRecycler> {
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         // draw the player on gui
         int entityX = 86, entityY = 50;
-        //drawEntityOnScreen
-        InventoryScreen.func_228187_a_(entityX, entityY, 20, (float) (2 * entityX - mouseX), (float) (entityY - mouseY), getMinecraft().player);
+        InventoryScreen.drawEntityOnScreen(entityX, entityY, 20, (float) (2 * entityX - mouseX), (float) (entityY - mouseY), getMinecraft().player);
         getMinecraft().textureManager.bindTexture(TEXTURE_RECYCLER);
         // arrow in background
         blit(115, 81, 79, 210, 22, 15);

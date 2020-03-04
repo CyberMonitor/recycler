@@ -11,6 +11,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import ovh.corail.recycler.block.BlockRecycler;
 import ovh.corail.recycler.registry.ModTriggers;
 import ovh.corail.recycler.tileentity.TileEntityRecycler;
+import ovh.corail.recycler.util.Helper;
 import ovh.corail.recycler.util.LangKey;
 import ovh.corail.recycler.recipe.RecyclingManager;
 
@@ -38,51 +39,54 @@ public class ServerRecyclerMessage {
     }
 
     static class Handler {
-        static void handle(final ServerRecyclerMessage message, Supplier<NetworkEvent.Context> ctx) {
-            ctx.get().enqueueWork(() -> {
-                ServerPlayerEntity player = ctx.get().getSender();
-                if (player != null) {
-                    TileEntityRecycler recycler = BlockRecycler.getTileEntity(player.world, message.pos);
-                    ItemStack stack;
-                    if (recycler != null) {
-                        switch (message.action) {
-                            case RECYCLE:
-                                if (recycler.recycle(player)) {
-                                    ModTriggers.FIRST_RECYCLE.trigger(player);
-                                }
-                                break;
-                            case SWITCH_AUTO:
-                                recycler.switchWorking();
-                                break;
-                            case TAKE_ALL:
-                                player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent(p -> {
-                                    ItemStackHandler inventOutput = recycler.getInventoryOutput();
-                                    IntStream.range(0, inventOutput.getSlots()).filter(slot -> !inventOutput.getStackInSlot(slot).isEmpty()).forEach(slot -> inventOutput.setStackInSlot(slot, ItemHandlerHelper.insertItemStacked(p, inventOutput.getStackInSlot(slot), false)));
-                                });
-                                break;
-                            case DISCOVER_RECIPE:
-                                stack = recycler.getInventoryWorking().getStackInSlot(0);
-                                if (!stack.isEmpty() && RecyclingManager.instance.discoverRecipe(player.getServerWorld(), stack)) {
-                                    recycler.updateRecyclingRecipe();
-                                    LangKey.MESSAGE_ADD_RECIPE_SUCCESS.sendMessage(player);
-                                } else {
-                                    LangKey.MESSAGE_ADD_RECIPE_FAILED.sendMessage(player);
-                                }
-                                break;
-                            case REMOVE_RECIPE:
-                                stack = recycler.getInventoryWorking().getStackInSlot(0);
-                                if (!stack.isEmpty() && RecyclingManager.instance.removeRecipe(stack)) {
-                                    recycler.updateRecyclingRecipe();
-                                    LangKey.MESSAGE_REMOVE_RECIPE_SUCCESS.sendMessage(player);
-                                } else {
-                                    LangKey.MESSAGE_REMOVE_RECIPE_FAILED.sendMessage(player);
-                                }
-                                break;
+        static void handle(final ServerRecyclerMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
+            NetworkEvent.Context ctx = contextSupplier.get();
+            if (Helper.isPacketToServer(ctx)) {
+                ctx.enqueueWork(() -> {
+                    ServerPlayerEntity player = ctx.getSender();
+                    if (player != null) {
+                        TileEntityRecycler recycler = BlockRecycler.getTileEntity(player.world, message.pos);
+                        ItemStack stack;
+                        if (recycler != null) {
+                            switch (message.action) {
+                                case RECYCLE:
+                                    if (recycler.recycle(player)) {
+                                        ModTriggers.FIRST_RECYCLE.trigger(player);
+                                    }
+                                    break;
+                                case SWITCH_AUTO:
+                                    recycler.switchWorking();
+                                    break;
+                                case TAKE_ALL:
+                                    player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent(p -> {
+                                        ItemStackHandler inventOutput = recycler.getInventoryOutput();
+                                        IntStream.range(0, inventOutput.getSlots()).filter(slot -> !inventOutput.getStackInSlot(slot).isEmpty()).forEach(slot -> inventOutput.setStackInSlot(slot, ItemHandlerHelper.insertItemStacked(p, inventOutput.getStackInSlot(slot), false)));
+                                    });
+                                    break;
+                                case DISCOVER_RECIPE:
+                                    stack = recycler.getInventoryWorking().getStackInSlot(0);
+                                    if (!stack.isEmpty() && RecyclingManager.instance.discoverRecipe(player.getServerWorld(), stack)) {
+                                        recycler.updateRecyclingRecipe();
+                                        LangKey.MESSAGE_ADD_RECIPE_SUCCESS.sendMessage(player);
+                                    } else {
+                                        LangKey.MESSAGE_ADD_RECIPE_FAILED.sendMessage(player);
+                                    }
+                                    break;
+                                case REMOVE_RECIPE:
+                                    stack = recycler.getInventoryWorking().getStackInSlot(0);
+                                    if (!stack.isEmpty() && RecyclingManager.instance.removeRecipe(stack)) {
+                                        recycler.updateRecyclingRecipe();
+                                        LangKey.MESSAGE_REMOVE_RECIPE_SUCCESS.sendMessage(player);
+                                    } else {
+                                        LangKey.MESSAGE_REMOVE_RECIPE_FAILED.sendMessage(player);
+                                    }
+                                    break;
+                            }
                         }
                     }
-                }
-            });
-            ctx.get().setPacketHandled(true);
+                });
+            }
+            ctx.setPacketHandled(true);
         }
     }
 }

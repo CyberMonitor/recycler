@@ -22,7 +22,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import ovh.corail.recycler.ConfigRecycler;
+import ovh.corail.recycler.config.ConfigRecycler;
 import ovh.corail.recycler.registry.ModBlocks;
 import ovh.corail.recycler.registry.ModItems;
 import ovh.corail.recycler.util.Helper;

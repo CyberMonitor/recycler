@@ -1,9 +1,15 @@
-package ovh.corail.recycler;
+package ovh.corail.recycler.config;
 
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.lang3.tuple.Pair;
+import ovh.corail.recycler.network.UpdateConfigMessage;
 
 import static ovh.corail.recycler.ModRecycler.MOD_ID;
+import static ovh.corail.recycler.ModRecycler.PROXY;
 
 public class ConfigRecycler {
 
@@ -72,7 +78,8 @@ public class ConfigRecycler {
         return MOD_ID + ".config." + name;
     }
 
-    static final ForgeConfigSpec GENERAL_SPEC, SHARED_GENERAL_SPEC;
+    public static final ForgeConfigSpec GENERAL_SPEC;
+    public static final ForgeConfigSpec SHARED_GENERAL_SPEC;
     public static final General general;
     public static final SharedGeneral shared_general;
     static {
@@ -82,5 +89,26 @@ public class ConfigRecycler {
         Pair<SharedGeneral, ForgeConfigSpec> confSharedGeneral = new ForgeConfigSpec.Builder().configure(SharedGeneral::new);
         shared_general = confSharedGeneral.getLeft();
         SHARED_GENERAL_SPEC = confSharedGeneral.getRight();
+    }
+
+    @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class ConfigEvent {
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public static void onReloadConfig(ModConfig.Reloading event) {
+            if (event.getConfig().getModId().equals(MOD_ID) && event.getConfig().getType() == ModConfig.Type.SERVER) {
+                // sync the config on all clients on dedicated server without the need to relog
+                PROXY.updateConfig();
+            }
+        }
+    }
+
+    public static UpdateConfigMessage getUpdatePacket() {
+        return new UpdateConfigMessage(shared_general.unbalanced_recipes.get(), shared_general.allow_automation.get());
+    }
+
+    public static void updateConfig(UpdateConfigMessage packet) {
+        // directly set the ConfigValues
+        shared_general.unbalanced_recipes.set(packet.unbalanced_recipes);
+        shared_general.allow_automation.set(packet.allow_automation);
     }
 }

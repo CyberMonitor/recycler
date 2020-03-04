@@ -24,7 +24,7 @@ import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
-import ovh.corail.recycler.ConfigRecycler;
+import ovh.corail.recycler.config.ConfigRecycler;
 import ovh.corail.recycler.block.BlockRecycler;
 import ovh.corail.recycler.capability.RecyclerWorkingStackHandler;
 import ovh.corail.recycler.registry.ModSounds;
