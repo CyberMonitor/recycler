@@ -22,7 +22,7 @@ public class ServerProxy implements IProxy {
 
     @Override
     public void markConfigDirty() {
-        if (!((MinecraftServer) LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER)).getPlayerList().getPlayers().isEmpty()) {
+        if (!this.isConfigDirty && !((MinecraftServer) LogicalSidedProvider.INSTANCE.get(LogicalSide.SERVER)).getPlayerList().getPlayers().isEmpty()) {
             this.isConfigDirty = true;
         }
     }

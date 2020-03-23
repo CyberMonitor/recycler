@@ -5,6 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
@@ -70,7 +71,7 @@ public class Helper {
     }
 
     public static boolean isValidRecipe(@Nullable IRecipe<CraftingInventory> recipe) {
-        return recipe != null && !recipe.getIngredients().isEmpty() && !recipe.getRecipeOutput().isEmpty() && recipe.getIngredients().stream().allMatch(ingredient -> ingredient.getMatchingStacks().length > 0);
+        return recipe != null && !recipe.getIngredients().isEmpty() && !recipe.getRecipeOutput().isEmpty() && recipe.getIngredients().stream().allMatch(i -> i == Ingredient.EMPTY || i.getMatchingStacks().length > 0);
     }
 
     public static NonNullList<ItemStack> mergeStackInList(NonNullList<ItemStack> list) {

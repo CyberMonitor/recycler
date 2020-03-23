@@ -11,6 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -72,7 +73,7 @@ public class RecyclingManager {
             return setAllowedRecipe(recipe, true) || (!ConfigRecycler.shared_general.unbalanced_recipes.get() && setUnbalancedRecipe(recipe, false));
         } else {
             // new recipe added
-            recipe = world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(craftingRecipe -> Helper.isValidRecipe(craftingRecipe) && Helper.areItemEqual(craftingRecipe.getRecipeOutput(), stack)).map(this::convertCraftingRecipe).findFirst().orElse(null);
+            recipe = world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(craftingRecipe -> Helper.areItemEqual(craftingRecipe.getRecipeOutput(), stack) && Helper.isValidRecipe(craftingRecipe)).map(this::convertCraftingRecipe).findFirst().orElse(null);
             // add recipe and save user defined recipes to json
             if (Helper.isValidRecipe(recipe)) {
                 this.recipes.add(recipe);
