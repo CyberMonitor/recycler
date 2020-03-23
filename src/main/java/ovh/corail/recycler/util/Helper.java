@@ -5,9 +5,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import ovh.corail.recycler.recipe.RecyclingRecipe;
@@ -68,7 +71,7 @@ public class Helper {
     }
 
     public static boolean isValidRecipe(@Nullable IRecipe<CraftingInventory> recipe) {
-        return recipe != null && !recipe.getIngredients().isEmpty() && !recipe.getRecipeOutput().isEmpty() && recipe.getIngredients().stream().allMatch(ingredient -> ingredient.getMatchingStacks().length > 0);
+        return recipe != null && !recipe.getIngredients().isEmpty() && !recipe.getRecipeOutput().isEmpty() && recipe.getIngredients().stream().allMatch(ingredient -> ingredient == Ingredient.EMPTY || ingredient.getMatchingStacks().length > 0);
     }
 
     public static NonNullList<ItemStack> mergeStackInList(NonNullList<ItemStack> list) {
@@ -141,6 +144,14 @@ public class Helper {
             }
         }
         return minCount <= 0;
+    }
+
+    public static boolean isPacketToClient(NetworkEvent.Context ctx) {
+        return ctx.getDirection().getOriginationSide() == LogicalSide.SERVER && ctx.getDirection().getReceptionSide() == LogicalSide.CLIENT;
+    }
+
+    public static boolean isPacketToServer(NetworkEvent.Context ctx) {
+        return ctx.getDirection().getOriginationSide() == LogicalSide.CLIENT && ctx.getDirection().getReceptionSide() == LogicalSide.SERVER;
     }
 
     @SuppressWarnings("all")
