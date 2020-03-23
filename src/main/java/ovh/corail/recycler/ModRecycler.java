@@ -15,6 +15,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ovh.corail.recycler.command.CommandRecycler;
+import ovh.corail.recycler.config.ConfigRecycler;
 import ovh.corail.recycler.config.RecyclerModConfig;
 import ovh.corail.recycler.gui.GuiRecycler;
 import ovh.corail.recycler.gui.GuiRecyclingBook;

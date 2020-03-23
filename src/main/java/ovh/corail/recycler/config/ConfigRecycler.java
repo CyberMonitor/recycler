@@ -1,4 +1,4 @@
-package ovh.corail.recycler;
+package ovh.corail.recycler.config;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -6,6 +6,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.lang3.tuple.Pair;
+import ovh.corail.recycler.ModRecycler;
 import ovh.corail.recycler.network.UpdateConfigMessage;
 
 import static ovh.corail.recycler.ModRecycler.MOD_ID;

@@ -7,7 +7,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.LogicalSidedProvider;
-import ovh.corail.recycler.ConfigRecycler;
+import ovh.corail.recycler.config.ConfigRecycler;
 
 import static ovh.corail.recycler.ModRecycler.LOGGER;
 

@@ -71,7 +71,7 @@ public class Helper {
     }
 
     public static boolean isValidRecipe(@Nullable IRecipe<CraftingInventory> recipe) {
-        return recipe != null && !recipe.getIngredients().isEmpty() && !recipe.getRecipeOutput().isEmpty() && recipe.getIngredients().stream().allMatch(ingredient -> ingredient == Ingredient.EMPTY || ingredient.getMatchingStacks().length > 0);
+        return recipe != null && !recipe.getIngredients().isEmpty() && !recipe.getRecipeOutput().isEmpty() && recipe.getIngredients().stream().allMatch(i -> i == Ingredient.EMPTY || i.getMatchingStacks().length > 0);
     }
 
     public static NonNullList<ItemStack> mergeStackInList(NonNullList<ItemStack> list) {

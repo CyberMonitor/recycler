@@ -22,7 +22,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import ovh.corail.recycler.ConfigRecycler;
+import ovh.corail.recycler.config.ConfigRecycler;
 import ovh.corail.recycler.registry.ModBlocks;
 import ovh.corail.recycler.registry.ModItems;
 import ovh.corail.recycler.util.Helper;
@@ -72,7 +72,7 @@ public class RecyclingManager {
             return setAllowedRecipe(recipe, true) || (!ConfigRecycler.shared_general.unbalanced_recipes.get() && setUnbalancedRecipe(recipe, false));
         } else {
             // new recipe added
-            recipe = world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(craftingRecipe -> Helper.isValidRecipe(craftingRecipe) && Helper.areItemEqual(craftingRecipe.getRecipeOutput(), stack)).map(this::convertCraftingRecipe).findFirst().orElse(null);
+            recipe = world.getRecipeManager().getRecipes(IRecipeType.CRAFTING).values().stream().filter(craftingRecipe -> Helper.areItemEqual(craftingRecipe.getRecipeOutput(), stack) && Helper.isValidRecipe(craftingRecipe)).map(this::convertCraftingRecipe).findFirst().orElse(null);
             // add recipe and save user defined recipes to json
             if (Helper.isValidRecipe(recipe)) {
                 this.recipes.add(recipe);
