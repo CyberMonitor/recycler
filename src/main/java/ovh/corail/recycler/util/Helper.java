@@ -13,7 +13,7 @@ import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.registries.IForgeRegistryEntry;
-import ovh.corail.recycler.compatibility.SupportMods;
+import ovh.corail.recycler.compatibility.CompatibilityProjectE;
 import ovh.corail.recycler.recipe.RecyclingRecipe;
 
 import javax.annotation.Nonnull;
@@ -83,7 +83,7 @@ public class Helper {
             return true;
         }
         if (ingredient.getMatchingStacks().length > 0) {
-            return !SupportMods.PROJECTE.isLoaded() || Arrays.stream(ingredient.getMatchingStacks()).noneMatch(stack -> "projecte:philosophers_stone".equals(stack.getItem().getRegistryName().toString()));
+            return CompatibilityProjectE.philosophers_stone == null || Arrays.stream(ingredient.getMatchingStacks()).noneMatch(stack -> stack.getItem() == CompatibilityProjectE.philosophers_stone);
         }
         return false;
     };
