@@ -13,12 +13,15 @@ import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import ovh.corail.recycler.compatibility.SupportMods;
 import ovh.corail.recycler.recipe.RecyclingRecipe;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -71,8 +74,19 @@ public class Helper {
     }
 
     public static boolean isValidRecipe(@Nullable IRecipe<CraftingInventory> recipe) {
-        return recipe != null && !recipe.getIngredients().isEmpty() && !recipe.getRecipeOutput().isEmpty() && recipe.getIngredients().stream().allMatch(i -> i == Ingredient.EMPTY || i.getMatchingStacks().length > 0);
+        return recipe != null && !recipe.getIngredients().isEmpty() && !recipe.getRecipeOutput().isEmpty() && recipe.getIngredients().stream().allMatch(VALID_INGREDIENT);
     }
+
+
+    private static Predicate<Ingredient> VALID_INGREDIENT = ingredient -> {
+        if (ingredient == Ingredient.EMPTY) {
+            return true;
+        }
+        if (ingredient.getMatchingStacks().length > 0) {
+            return !SupportMods.PROJECTE.isLoaded() || Arrays.stream(ingredient.getMatchingStacks()).noneMatch(stack -> "projecte:philosophers_stone".equals(stack.getItem().getRegistryName().toString()));
+        }
+        return false;
+    };
 
     public static NonNullList<ItemStack> mergeStackInList(NonNullList<ItemStack> list) {
         for (int i = 0 ; i < list.size() ; i++) {

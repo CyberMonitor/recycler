@@ -15,6 +15,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ovh.corail.recycler.command.CommandRecycler;
+import ovh.corail.recycler.compatibility.CompatibilityQuark;
+import ovh.corail.recycler.compatibility.SupportMods;
 import ovh.corail.recycler.config.ConfigRecycler;
 import ovh.corail.recycler.config.RecyclerModConfig;
 import ovh.corail.recycler.gui.GuiRecycler;
@@ -24,11 +26,11 @@ import ovh.corail.recycler.network.ClientProxy;
 import ovh.corail.recycler.network.IProxy;
 import ovh.corail.recycler.network.PacketHandler;
 import ovh.corail.recycler.network.ServerProxy;
+import ovh.corail.recycler.recipe.RecyclingManager;
 import ovh.corail.recycler.registry.ModContainers;
 import ovh.corail.recycler.registry.ModItems;
 import ovh.corail.recycler.registry.ModTabs;
 import ovh.corail.recycler.registry.ModTriggers;
-import ovh.corail.recycler.recipe.RecyclingManager;
 
 @Mod("corail_recycler")
 public class ModRecycler {
@@ -60,7 +62,7 @@ public class ModRecycler {
     }
 
     private void clientInit(final FMLClientSetupEvent event) {
-        ScreenManager.registerFactory(ModContainers.RECYCLER, GuiRecycler::new);
+        ScreenManager.registerFactory(ModContainers.RECYCLER, SupportMods.QUARK.isLoaded() ? CompatibilityQuark.ButtonIgnoredScreen::new : GuiRecycler::new);
         ScreenManager.registerFactory(ModContainers.RECYCLING_BOOK, GuiRecyclingBook::new);
         event.getMinecraftSupplier().get().getItemColors().register(ItemDisk::getColor, ModItems.diamond_disk, ModItems.steel_disk);
     }
